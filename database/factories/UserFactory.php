@@ -50,7 +50,7 @@ $factory->state(User::class, 'user-one', function (Faker $faker) {
     ];
 });
 
-//$factory->afterCreating(App\User::class, function ($user, $faker) {
+$factory->afterCreating(App\User::class, function (User $user, $faker) {
 //    $user->profile()->save(factory(\App\Models\Profile::class)->make());
-//    $user->cart()->save(factory(\App\Models\Cart::class)->make());
-//});
+    $user->cart()->save(factory(\App\Models\Cart::class)->make());
+});

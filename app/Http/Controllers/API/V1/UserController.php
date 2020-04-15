@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Storage;
 
 class UserController extends AppBaseController
 {
+
     public function avatar(Request $request): \Illuminate\Http\JsonResponse
     {
         /** @var User $user */

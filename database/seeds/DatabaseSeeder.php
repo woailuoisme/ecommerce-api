@@ -11,12 +11,24 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        if ($this->command->confirm('Do you want to fresh the database?',true)) {
+        if ($this->command->confirm('Do you want to fresh the database?', true)) {
             $this->command->call('migrate:fresh');
             $this->command->info('Database was freshed');
         }
         $this->call([
-           UsersTableSeeder::class
+            UsersTableSeeder::class,
+            ProductCategoriesTableSeeder::class,
+            ProductsTablesTableSeeder::class,
+            ProductSkuTableSeeder::class,
+            ProductReviewsTableSeeder::class,
+            ProductCouponsTableSeeder::class,
+            AddressesTableSeeder::class,
+            OrdersTableSeeder::class,
+            CartProductTableSeeder::class,
+            OrderProductTableSeeder::class,
+            UserFavoriteProductTableSeeder::class,
+            UserLikeCommentsSeeder::class
         ]);
+
     }
 }

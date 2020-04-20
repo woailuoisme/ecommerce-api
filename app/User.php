@@ -187,6 +187,7 @@ class User extends Authenticatable implements JWTSubject
             $this->likeReviews()->updateExistingPivot($product_id, ['like' => $like]);
         }
         $this->likeReviews()->attach($product_id, ['like' => $like]);
+
     }
 
     public function hasLikeReviews(): bool

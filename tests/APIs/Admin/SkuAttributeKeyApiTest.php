@@ -4,7 +4,7 @@ use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 use Tests\ApiTestTrait;
-use App\Models\SkuAttributeKey;
+use App\Models\SkuKey;
 
 class SkuAttributeKeyApiTest extends TestCase
 {
@@ -15,7 +15,7 @@ class SkuAttributeKeyApiTest extends TestCase
      */
     public function test_create_sku_attribute_key()
     {
-        $skuAttributeKey = factory(SkuAttributeKey::class)->make()->toArray();
+        $skuAttributeKey = factory(SkuKey::class)->make()->toArray();
 
         $this->response = $this->json(
             'POST',
@@ -30,7 +30,7 @@ class SkuAttributeKeyApiTest extends TestCase
      */
     public function test_read_sku_attribute_key()
     {
-        $skuAttributeKey = factory(SkuAttributeKey::class)->create();
+        $skuAttributeKey = factory(SkuKey::class)->create();
 
         $this->response = $this->json(
             'GET',
@@ -45,8 +45,8 @@ class SkuAttributeKeyApiTest extends TestCase
      */
     public function test_update_sku_attribute_key()
     {
-        $skuAttributeKey = factory(SkuAttributeKey::class)->create();
-        $editedSkuAttributeKey = factory(SkuAttributeKey::class)->make()->toArray();
+        $skuAttributeKey = factory(SkuKey::class)->create();
+        $editedSkuAttributeKey = factory(SkuKey::class)->make()->toArray();
 
         $this->response = $this->json(
             'PUT',
@@ -62,7 +62,7 @@ class SkuAttributeKeyApiTest extends TestCase
      */
     public function test_delete_sku_attribute_key()
     {
-        $skuAttributeKey = factory(SkuAttributeKey::class)->create();
+        $skuAttributeKey = factory(SkuKey::class)->create();
 
         $this->response = $this->json(
             'DELETE',

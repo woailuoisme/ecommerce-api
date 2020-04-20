@@ -17,7 +17,7 @@ class ProductCategoryRepository extends BaseRepository
      * @var array
      */
     protected $fieldSearchable = [
-        
+
     ];
 
     /**
@@ -33,7 +33,7 @@ class ProductCategoryRepository extends BaseRepository
     /**
      * Configure the Model
      **/
-    public function model()
+    public function model(): string
     {
         return ProductCategory::class;
     }

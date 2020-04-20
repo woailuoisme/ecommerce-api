@@ -4,7 +4,10 @@
 namespace App\Http\Controllers\API\V1;
 
 
-class ProductSkuController
+use App\Http\Controllers\AppBaseController;
+
+class ProductSkuController extends AppBaseController
 {
+
 
 }

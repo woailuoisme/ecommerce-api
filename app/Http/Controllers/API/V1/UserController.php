@@ -6,6 +6,7 @@ namespace App\Http\Controllers\API\V1;
 
 use App\Http\Controllers\AppBaseController;
 use App\Http\Resources\UserResource;
+use App\Models\Product;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -13,6 +14,11 @@ use Illuminate\Support\Facades\Storage;
 
 class UserController extends AppBaseController
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth:api');
+    }
 
     public function avatar(Request $request): \Illuminate\Http\JsonResponse
     {

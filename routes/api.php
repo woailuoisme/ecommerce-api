@@ -13,7 +13,7 @@ Route::namespace('V1')->prefix('v1')->group(function (){
         Route::post('password/forget', 'AuthController@forgetPassword')->name('auth.password.forget');
         Route::post('password/reset', 'AuthController@resetPassword')->name('auth.password.rest');
     });
-    route::prefix('user')->group(function (){
+    Route::prefix('user')->group(function () {
         Route::post('avatar', 'UserController@avatar')->name('user.avatar');
         route::prefix('cart')->group(function () {
             Route::get('', 'CartController@index')->name('user.cart.index');
@@ -38,26 +38,38 @@ Route::namespace('V1')->prefix('v1')->group(function (){
 //            Route::post('update','UserProfileController@update')->name('user.profile.update');
 //            Route::get('','UserProfileController@show')->name('user.profile.show');
 //        });
-        route::get('favorite_products','UserController@userFavoriteProducts')->name('user.favorite.list');
-        route::post('favorite_product','UserController@favorite')->name('user.favorite');
-        route::post('cancel_favorite_product','UserController@cancelFavorite')->name('user.cancel.favorite');
-        route::post('like_product','UserController@upProduct')->name('user.like.product');
-        route::post('unlike_product','UserController@downProduct')->name('user.unlike.product');
+        route::get('favorite_products', 'UserFavoriteController@userFavoriteProducts')->name('user.favorite.list');
+        route::delete('favorite_clear', 'UserFavoriteController@clearFavorite')->name('user.favorite.clear');
+        route::post('favorite_product', 'UserFavoriteController@favorite')->name('user.favorite');
+        route::post('favorite_cancel_product', 'UserFavoriteController@cancelFavorite')->name('user.cancel.favorite');
+
+        route::get('like_reviews', 'UserlikeReviewController@cancelFavorite')->name('user.unlike');
+        route::post('like_review', 'UserlikeReviewController@upProduct')->name('user.like.review');
+        route::post('unlike_review', 'UserlikeReviewController@downProduct')->name('user.unlike.review');
 
     });
-    route::prefix('products')->group(function (){
-        route::get('','ProductController@index');
-        route::get('/{id}','ProductController@show');
+
+    Route::prefix('category')->group(function () {
+        Route::get('', 'ProductCategoryController@index');
+        Route::get('/{id}', 'ProductCategoryController@show');
 //        route::get('/show','ProductController@show');
     });
+    Route::prefix('products')->group(function () {
+        Route::get('', 'ProductController@index');
+        Route::get('/{id}', 'ProductController@show');
+//        route::get('/show','ProductController@show');
+    });
+    Route::prefix('sku')->group(function () {
+        Route::post('key', 'ProductSkuKeyController@store');
+    });
     Route::namespace('Admin')->prefix('admin')->group(function(){
-        Route::apiResource('product_categories', 'ProductCategoryAPIController');
-        Route::apiResource('products', 'ProductAPIController');
-        Route::apiResource('product_skus', 'ProductSkuAPIController');
+//        Route::apiResource('product_categories', 'ProductCategoryAPIController');
+//        Route::apiResource('products', 'ProductAPIController');
+//        Route::apiResource('product_skus', 'ProductSkuAPIController');
         Route::apiResource('product_reviews', 'ProductReviewAPIController');
-        Route::apiResource('product_coupons', 'ProductCouponAPIController');
-        Route::apiResource('sku_attribute_keys', 'SkuAttributeKeyAPIController');
-        Route::apiResource('sku_attribute_values', 'SkuAttributeValueAPIController');
+//        Route::apiResource('product_coupons', 'ProductCouponAPIController');
+//        Route::apiResource('sku_attribute_keys', 'SkuAttributeKeyAPIController');
+//        Route::apiResource('sku_attribute_values', 'SkuAttributeValueAPIController');
         Route::apiResource('addresses', 'AddressAPIController');
         Route::apiResource('carts', 'CartAPIController');
         Route::apiResource('orders', 'OrderAPIController');

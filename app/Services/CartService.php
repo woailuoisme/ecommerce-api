@@ -7,12 +7,20 @@ namespace App\Services;
 //use App\Events\CartCheckoutEvent;
 use App\Models\Cart;
 use App\Models\Order;
+use App\Repositories\CartRepository;
 use App\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class CartService extends AppbaseService
 {
+    /** @var CartRepository */
+    private $cartRepository;
+
+    public function __construct(CartRepository $cartRepository)
+    {
+        $this->cartRepository = $cartRepository;
+    }
 
     public function addProductToCart($product_id)
     {
@@ -21,9 +29,9 @@ class CartService extends AppbaseService
             $user = Auth::guard('api')->user();
             $cart = $user->cart;
             if (empty($cart)) {
-                $cart = Cart::create(['user_id' => $user->id]);
+                $this->cartRepository->create(['user_id' => $user->id]);
             }
-            $cart->addProductToCart($product_id);
+            $this->cartRepository->setModel($cart)->addProductToCart($product_id);
             return $this->sendSuccess("product $product_id added in user's cart ");
         });
         return $result;
@@ -34,7 +42,7 @@ class CartService extends AppbaseService
         $result = DB::transaction(function () use ($product_id, $quantity) {
             /** @var Cart $cart */
             $cart = Auth::guard('api')->user()->cart;
-            $cart->updateProductQuantity($product_id,$quantity);
+            $this->cartRepository->setModel($cart)->updateProductQuantity($product_id, $quantity);
             return $this->sendSuccess("product $product_id  quantity update $quantity ");
         });
         return $result;
@@ -47,7 +55,7 @@ class CartService extends AppbaseService
             $user = Auth::guard('api')->user();
             /** @var Cart $cart */
             $cart = $user->cart;
-            $cart->clearProductsFromCart();
+            $this->cartRepository->setModel($cart)->clearProductsFromCart();
             return $this->sendSuccess("User({$user->name} cart has cleared ");
         });
         return $result;
@@ -59,7 +67,7 @@ class CartService extends AppbaseService
         $user = Auth::guard('api')->user();
         /** @var Cart $cart */
         $cart =$user->cart;
-        $cart->removeSingleProductFromCart($product_id);
+        $this->cartRepository->setModel($cart)->removeSingleProductFromCart($product_id);
         return $this->sendSuccess(" product $product_id has beeen removed in cart");
     }
 
@@ -68,7 +76,7 @@ class CartService extends AppbaseService
         $result = DB::transaction(function () use ($product_ids) {
             /** @var Cart $cart */
             $cart = Auth::guard('api')->user()->cart;
-            $cart->removeMultiProductsFromCart($product_ids);
+            $this->cartRepository->setModel($cart)->removeMultiProductsFromCart($product_ids);
             return $this->sendSuccess("products $product_ids cart has cleared ");
         });
         return $result;
@@ -81,11 +89,11 @@ class CartService extends AppbaseService
             $user = Auth::guard('api')->user();
             /** @var Cart $cart */
             $cart = $user->cart;
-            if ($cart){
-                return $this->sendError("User {$user->id}");
+            if (!$cart) {
+                return $this->sendError("User {$user->id} is\'t has cart ");
             }
             try{
-                $cart->cartCheckout();
+                $this->cartRepository->setModel($cart)->cartCheckout();
             }catch (\Exception $e){
                 return $this->sendError($e->getMessage());
             }

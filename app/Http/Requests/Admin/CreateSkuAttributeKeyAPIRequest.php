@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Admin;
 
-use App\Models\SkuAttributeKey;
+use App\Models\SkuKey;
 use InfyOm\Generator\Request\APIRequest;
 
 class CreateSkuAttributeKeyAPIRequest extends APIRequest
@@ -24,6 +24,6 @@ class CreateSkuAttributeKeyAPIRequest extends APIRequest
      */
     public function rules()
     {
-        return SkuAttributeKey::$rules;
+        return SkuKey::$rules;
     }
 }

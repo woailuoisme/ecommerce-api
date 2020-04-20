@@ -14,14 +14,8 @@ class ProductSku extends Model
 {
 
     public $table = 'product_sku';
-
-
-
-
     public $fillable = [
-
     ];
-
     /**
      * The attributes that should be casted to native types.
      *
@@ -39,6 +33,12 @@ class ProductSku extends Model
     public static $rules = [
 
     ];
+
+    public function product(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Product::class, 'product_id', 'id');
+    }
+
 
 
 }

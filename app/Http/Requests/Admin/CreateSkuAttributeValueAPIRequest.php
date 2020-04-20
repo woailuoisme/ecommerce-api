@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Admin;
 
-use App\Models\SkuAttributeValue;
+use App\Models\SkuValue;
 use InfyOm\Generator\Request\APIRequest;
 
 class CreateSkuAttributeValueAPIRequest extends APIRequest
@@ -24,6 +24,6 @@ class CreateSkuAttributeValueAPIRequest extends APIRequest
      */
     public function rules()
     {
-        return SkuAttributeValue::$rules;
+        return SkuValue::$rules;
     }
 }

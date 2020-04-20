@@ -4,7 +4,7 @@ namespace App\Http\Controllers\API\V1\Admin ;
 
 use App\Http\Requests\Admin\CreateSkuAttributeKeyAPIRequest;
 use App\Http\Requests\Admin\UpdateSkuAttributeKeyAPIRequest;
-use App\Models\SkuAttributeKey;
+use App\Models\SkuKey;
 use App\Repositories\SkuAttributeKeyRepository;
 use Illuminate\Http\Request;
 use App\Http\Controllers\AppBaseController;
@@ -12,7 +12,7 @@ use Response;
 
 /**
  * Class SkuAttributeKeyController
- * @package App\Http\Controllers\API\V1\Admin 
+ * @package App\Http\Controllers\API\V1\Admin
  */
 
 class SkuAttributeKeyAPIController extends AppBaseController
@@ -70,7 +70,7 @@ class SkuAttributeKeyAPIController extends AppBaseController
      */
     public function show($id)
     {
-        /** @var SkuAttributeKey $skuAttributeKey */
+        /** @var SkuKey $skuAttributeKey */
         $skuAttributeKey = $this->skuAttributeKeyRepository->find($id);
 
         if (empty($skuAttributeKey)) {
@@ -93,7 +93,7 @@ class SkuAttributeKeyAPIController extends AppBaseController
     {
         $input = $request->all();
 
-        /** @var SkuAttributeKey $skuAttributeKey */
+        /** @var SkuKey $skuAttributeKey */
         $skuAttributeKey = $this->skuAttributeKeyRepository->find($id);
 
         if (empty($skuAttributeKey)) {
@@ -117,7 +117,7 @@ class SkuAttributeKeyAPIController extends AppBaseController
      */
     public function destroy($id)
     {
-        /** @var SkuAttributeKey $skuAttributeKey */
+        /** @var SkuKey $skuAttributeKey */
         $skuAttributeKey = $this->skuAttributeKeyRepository->find($id);
 
         if (empty($skuAttributeKey)) {

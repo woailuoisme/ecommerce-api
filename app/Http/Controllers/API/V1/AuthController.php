@@ -142,13 +142,20 @@ class AuthController extends AppBaseController
 
     private function _tokenData($token): array
     {
+        /** @var User $user */
+        $user = auth('api')->user();
         return [
-            'access_token' => $token,
-            'token_type'   => 'bearer ',
-            'expires_in'   => auth('api')->factory()->getTTL().' minutes',
-            'create_at'    => Carbon::createFromTimestamp(auth('api')->getClaim('iat'))->toDateTimeString(),
-            'expires_at'   => Carbon::createFromTimestamp(auth('api')->getClaim('exp'))->toDateTimeString()
-//            'expires' => \Tymon\JWTAuth\Facades\JWTAuth::getClaim('exp')
+            'name'       => $user->name,
+            'email'      => $user->email,
+            'avatar'     => $user->avatarUrl,
+            'token_info' => [
+                'token'      => $token,
+                'token_type' => 'bearer ',
+                'expires_in' => auth('api')->factory()->getTTL().' minutes',
+                'create_at'  => Carbon::createFromTimestamp(auth('api')->getClaim('iat'))->toDateTimeString(),
+                'expires_at' => Carbon::createFromTimestamp(auth('api')->getClaim('exp'))->toDateTimeString(),
+            ],
+
         ];
     }
 }

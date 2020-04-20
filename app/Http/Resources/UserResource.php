@@ -15,12 +15,12 @@ class UserResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id' =>$this->id,
-            'name'=> $this->name,
-            'email'=> $this->email,
-            'avatar'=> $this->avatar,
+            'id'         =>$this->id,
+            'name'       => $this->name,
+            'email'      => $this->email,
+            'avatar'     => $this->avatar,
 //            'profile'=>$this->whenLoaded('profile',new UserProfileResource($this->proflile)),
-//            'avatar_url'=> $this->avatarUrl()
+            'avatar_url' => $this->avatarUrl,
         ];
     }
 }

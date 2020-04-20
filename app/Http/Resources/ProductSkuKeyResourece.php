@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class CartProductResource extends JsonResource
+class ProductSkuKeyResourece extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -15,11 +15,9 @@ class CartProductResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id'          => $this->id,
-            'title'       => $this->title,
-            'description' => $this->description,
-            'price'       => $this->price,
-            'quantity'    => $this->pivot->quantity,
+            'id'     => $this->id,
+            'name'   => $this->name,
+            'values' => $this->whenLoaded('skuValues', ProductSkuValueResourece::collection($this->skuValues)),
         ];
     }
 }

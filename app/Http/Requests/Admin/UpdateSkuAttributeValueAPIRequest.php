@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Admin;
 
-use App\Models\SkuAttributeValue;
+use App\Models\SkuValue;
 use InfyOm\Generator\Request\APIRequest;
 
 class UpdateSkuAttributeValueAPIRequest extends APIRequest
@@ -24,8 +24,8 @@ class UpdateSkuAttributeValueAPIRequest extends APIRequest
      */
     public function rules()
     {
-        $rules = SkuAttributeValue::$rules;
-        
+        $rules = SkuValue::$rules;
+
         return $rules;
     }
 }

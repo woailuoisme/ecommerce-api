@@ -43,7 +43,7 @@ class InitUserRelationsTables extends Migration
             $table->string('order_num')->unique();
             $table->string('order_status')->default('pay_pending');
             $table->decimal('total_amount', 10, 2)->comment('订单总金额');
-            $table->text('address')->comment('JSON格式的收货地址');
+            $table->text('address')->nullable()->comment('JSON格式的收货地址');
             $table->text('remark')->nullable()->comment('订单备注');
 
             $table->dateTime('paid_at')->nullable()->comment('支付时间');

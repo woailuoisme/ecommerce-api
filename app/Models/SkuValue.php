@@ -6,21 +6,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class SkuAttributeKey
+ * Class SkuAttributeValue
  * @package App\Models
- * @version April 15, 2020, 9:18 pm CST
+ * @version April 15, 2020, 9:19 pm CST
  *
  */
-class SkuAttributeKey extends Model
+class SkuValue extends Model
 {
-
-    public $table = 'sku_attribute_keys';
-
-
-
+    public $table = 'product_sku_attributes_value';
 
     public $fillable = [
-
+        'name',
     ];
 
     /**
@@ -40,6 +36,11 @@ class SkuAttributeKey extends Model
     public static $rules = [
 
     ];
+
+    public function skuKey()
+    {
+        return $this->belongsTo(SkuKey::class, 'sku_attributes_id', 'id');
+    }
 
 
 }

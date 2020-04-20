@@ -4,6 +4,7 @@ namespace App\Models;
 
 
 use App\Exceptions\ApiException;
+use App\Repositories\CartRepository;
 use App\User;
 use Illuminate\Database\Eloquent\Model;
 
@@ -15,6 +16,18 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Cart extends Model
 {
+
+    /** @var CartRepository */
+//    private $cartRepository;
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+//        $this->cartRepository =$cartRepository;
+    }
+//    public function __construct(CartRepository $cartRepository)
+//    {
+//        $this->cartRepository =$cartRepository;
+//    }
 
     public $table = 'carts';
 
@@ -43,6 +56,11 @@ class Cart extends Model
 
     ];
 
+    public function getRepository(): CartRepository
+    {
+        return $this->cartRepository;
+    }
+
     public function products(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
         return $this->belongsToMany(Product::class, 'cart_product')->withPivot('quantity')->withTimestamps();
@@ -57,8 +75,9 @@ class Cart extends Model
     {
         if ($this->existsProduct($product_id)) {
             $this->products()->wherePivot('product_id', $product_id)->increment('quantity');
+        } else {
+            $this->products()->attach($product_id, ['quantity' => 1]);
         }
-        $this->products()->attach($product_id, ['quantity' => 1]);
     }
 
     public function updateProductQuantity($product_id, $quantity): void
@@ -87,15 +106,15 @@ class Cart extends Model
 
     public function cartCheckout(): void
     {
-        if ($this->hasProducts()){
+        if (!$this->hasProducts()) {
             throw new ApiException('cart don\'t has any products');
         }
         /** @var Order $order */
         $order = Order::create([
-            'statusCode' => Order::ORDER_STATUS_PAY_PENDING,
-            'user_id' => $this->user_id,
-            'order_num' => Order::orderNumber(),
-            'total_price' => $this->totalPrice(),
+            'order_status' => Order::ORDER_STATUS_PAY_PENDING,
+            'user_id'      => $this->user_id,
+            'order_num'    => Order::orderNumber(),
+            'total_amount' => $this->totalPrice(),
         ]);
         foreach ($this->products as $product) {
             $order->products()->attach($product->id, ['quantity' => $product->pivot->quantity]);
@@ -129,6 +148,5 @@ class Cart extends Model
     {
         return $this->products->count() > 0;
     }
-
 
 }

@@ -4,7 +4,7 @@ use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 use Tests\ApiTestTrait;
-use App\Models\SkuAttributeValue;
+use App\Models\SkuValue;
 
 class SkuAttributeValueApiTest extends TestCase
 {
@@ -15,7 +15,7 @@ class SkuAttributeValueApiTest extends TestCase
      */
     public function test_create_sku_attribute_value()
     {
-        $skuAttributeValue = factory(SkuAttributeValue::class)->make()->toArray();
+        $skuAttributeValue = factory(SkuValue::class)->make()->toArray();
 
         $this->response = $this->json(
             'POST',
@@ -30,7 +30,7 @@ class SkuAttributeValueApiTest extends TestCase
      */
     public function test_read_sku_attribute_value()
     {
-        $skuAttributeValue = factory(SkuAttributeValue::class)->create();
+        $skuAttributeValue = factory(SkuValue::class)->create();
 
         $this->response = $this->json(
             'GET',
@@ -45,8 +45,8 @@ class SkuAttributeValueApiTest extends TestCase
      */
     public function test_update_sku_attribute_value()
     {
-        $skuAttributeValue = factory(SkuAttributeValue::class)->create();
-        $editedSkuAttributeValue = factory(SkuAttributeValue::class)->make()->toArray();
+        $skuAttributeValue = factory(SkuValue::class)->create();
+        $editedSkuAttributeValue = factory(SkuValue::class)->make()->toArray();
 
         $this->response = $this->json(
             'PUT',
@@ -62,7 +62,7 @@ class SkuAttributeValueApiTest extends TestCase
      */
     public function test_delete_sku_attribute_value()
     {
-        $skuAttributeValue = factory(SkuAttributeValue::class)->create();
+        $skuAttributeValue = factory(SkuValue::class)->create();
 
         $this->response = $this->json(
             'DELETE',

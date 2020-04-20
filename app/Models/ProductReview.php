@@ -3,6 +3,7 @@
 namespace App\Models;
 
 
+use App\User;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -37,5 +38,29 @@ class ProductReview extends Model
 
     ];
 
+    public function product(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Product::class, 'product_id', 'id');
+    }
+
+    public function likeUsers(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'user_like_review')->withTimestamps();
+    }
+
+    public function hasLikeUser(): bool
+    {
+        return $this->likeUsers->count() > 0;
+    }
+
+    public function upLikeUserCount(): int
+    {
+        return $this->likeUsers()->wherePivot('like', User::TYPE_LIKE)->count();
+    }
+
+    public function downLikeUserCount(): int
+    {
+        return $this->likeUsers()->wherePivot('like', User::TYPE_UNLIKE)->count();
+    }
 
 }

@@ -12,11 +12,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ProductCategory extends Model
 {
-
     public $table = 'product_categories';
-
-
-
 
     public $fillable = [
 
@@ -39,6 +35,11 @@ class ProductCategory extends Model
     public static $rules = [
 
     ];
+
+    public function products(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Product::class, 'category_id', 'id');
+    }
 
 
 }

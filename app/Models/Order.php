@@ -46,12 +46,11 @@ class Order extends Model
 
     public $table = 'orders';
 
+//    public $fillable = [
+//
+//    ];
 
-
-
-    public $fillable = [
-
-    ];
+    public $guarded = [];
 
     /**
      * The attributes that should be casted to native types.

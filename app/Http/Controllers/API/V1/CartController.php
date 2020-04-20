@@ -21,7 +21,7 @@ class CartController extends AppBaseController
      */
     private $cartService;
 
-    public function __construct(CartRepository $cartRepo, CartService $cartService)
+    public function __construct(CartService $cartService)
     {
         $this->cartService = $cartService;
         $this->middleware('auth:api');

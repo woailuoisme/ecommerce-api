@@ -74,6 +74,7 @@ class InitAllTables extends Migration
             $table->unsignedBigInteger('product_id');
             $table->unsignedBigInteger('user_id');
 
+            $table->boolean('is_top')->default(false)->comment('是否置顶');
             $table->string('content')->comment('评论内容');
             $table->unsignedTinyInteger('rating')->default(5)->comment('产品的评论星级');
             $table->foreign('product_id')
@@ -103,13 +104,14 @@ class InitAllTables extends Migration
         Schema::create('product_sku_attributes_key', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name')->comment('例：“颜色”，“尺寸”');
-            $table->unsignedInteger('sort')->comment('排序');
+            $table->unsignedInteger('sort')->default(1)->comment('排序');
             $table->timestamps();
+            $table->unique(['name']);
         });
         Schema::create('product_sku_attributes_value', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('sku_attributes_id');
-            $table->string('sku_attributes_value');
+            $table->string('name')->comment('黑色，12寸');
             $table->foreign('sku_attributes_id')
                 ->references('id')
                 ->on('product_sku_attributes_key')
@@ -117,6 +119,7 @@ class InitAllTables extends Migration
                 ->onUpdate('cascade')
             ;
             $table->timestamps();
+            $table->unique(['sku_attributes_id', 'name']);
         });
     }
 

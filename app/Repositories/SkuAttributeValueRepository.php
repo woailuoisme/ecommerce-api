@@ -2,7 +2,7 @@
 
 namespace App\Repositories;
 
-use App\Models\SkuAttributeValue;
+use App\Models\SkuValue;
 use App\Repositories\BaseRepository;
 
 /**
@@ -17,7 +17,7 @@ class SkuAttributeValueRepository extends BaseRepository
      * @var array
      */
     protected $fieldSearchable = [
-        
+
     ];
 
     /**
@@ -35,6 +35,6 @@ class SkuAttributeValueRepository extends BaseRepository
      **/
     public function model()
     {
-        return SkuAttributeValue::class;
+        return SkuValue::class;
     }
 }

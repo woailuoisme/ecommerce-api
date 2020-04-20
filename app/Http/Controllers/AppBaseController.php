@@ -19,14 +19,22 @@ use InfyOm\Generator\Utils\ResponseUtil;
  */
 class AppBaseController extends Controller
 {
-    public function sendResponse($data, $message, $code = 200): \Illuminate\Http\JsonResponse
+    public function sendResponse($data, $message = '', $code = 200): \Illuminate\Http\JsonResponse
     {
-        return Response::json(ResponseUtil::makeResponse($message, $data), $code);
+        return Response::json($this->_makeResponse($message, $data), $code);
+    }
+
+    public function sendResponseWithoutMsg($data, $code = 200): \Illuminate\Http\JsonResponse
+    {
+        return Response::json([
+            'success' => true,
+            'data'    => $data,
+        ], $code);
     }
 
     public function sendError($error, $code = 400): \Illuminate\Http\JsonResponse
     {
-        return Response::json(ResponseUtil::makeError($error), $code);
+        return Response::json($this->_makeError($error), $code);
     }
 
     public function sendSuccess($message, $code=200): \Illuminate\Http\JsonResponse
@@ -35,5 +43,34 @@ class AppBaseController extends Controller
             'success' => true,
             'message' => $message
         ], $code);
+    }
+
+    private function _makeResponse($message, $data): array
+    {
+        if (empty($message)) {
+            return [
+                'success' => true,
+                'data'    => $data,
+            ];
+        }
+
+        return [
+            'success' => true,
+            'message' => $message,
+            'data'    => $data,
+        ];
+    }
+
+    private function _makeError($message, array $data = []): array
+    {
+        $res = [
+            'success' => false,
+            'message' => $message,
+        ];
+        if (!empty($data)) {
+            $res['data'] = $data;
+        }
+
+        return $res;
     }
 }

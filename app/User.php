@@ -7,15 +7,13 @@ use App\Models\Cart;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductReview;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
-use phpDocumentor\Reflection\Types\Boolean;
 use Tymon\JWTAuth\Contracts\JWTSubject;
-use function foo\func;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -88,6 +86,18 @@ class User extends Authenticatable implements JWTSubject
     public const TYPE_LIKE = 1;
     public const TYPE_UNLIKE = -1;
 
+    public const USER_ROLE_ADMIN = 'admin';  // 管理员
+    public const USER_ROLE_GENERAL = 'general';    // 普通用户
+
+    public const USER_ROLE = [
+        self::USER_ROLE_ADMIN   => '管理员',
+        self::USER_ROLE_GENERAL => '普通用户',
+    ];
+
+    public function getIsAdminAttribute(): bool
+    {
+        return $this->attributes['role'] === self::USER_ROLE_ADMIN;
+    }
 
 
     public function productReviews(): \Illuminate\Database\Eloquent\Relations\HasMany
@@ -183,6 +193,41 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->likeReviewsCount() > 0;
     }
+
+
+    public function scopeWithMostBlogPosts(Builder $query)
+    {
+        return $query->withCount('blogPosts')->orderBy('blog_posts_count', 'desc');
+    }
+
+//    public function scopeWithMostBlogPostsLastMonth(Builder $query)
+//    {
+//        return $query->withCount(['blogPosts' => function (Builder $query) {
+//            $query->whereBetween(static::CREATED_AT, [now()->subMonths(1), now()]);
+//        }])->has('blogPosts', '>=', 1)
+//            ->orderBy('blog_posts_count', 'desc');
+//    }
+//    public function reviewProducts(){
+////        return $this->hasManyThrough()
+//    }
+
+    public function scopeWithMostCommentsLastMonth(Builder $query)
+    {
+        return $query->withCount([
+            'reviews' => function (Builder $query) {
+                $query->whereBetween(static::CREATED_AT, [now()->subMonths(1), now()]);
+            },
+        ])->has('reviews', '>=', 1)
+            ->orderBy('reviews_count', 'desc');
+    }
+
+    public function scopeThatHasCommentedOnProduct(Builder $query, Product $product)
+    {
+        return $query->whereHas('reviews', function ($query) use ($product) {
+            return $query->where('product_id', '=', $product->id);
+        });
+    }
+
 
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.

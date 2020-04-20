@@ -1,6 +1,6 @@
 <?php namespace Tests\Repositories;
 
-use App\Models\SkuAttributeKey;
+use App\Models\SkuKey;
 use App\Repositories\SkuAttributeKeyRepository;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
@@ -26,14 +26,15 @@ class SkuAttributeKeyRepositoryTest extends TestCase
      */
     public function test_create_sku_attribute_key()
     {
-        $skuAttributeKey = factory(SkuAttributeKey::class)->make()->toArray();
+        $skuAttributeKey = factory(SkuKey::class)->make()->toArray();
 
         $createdSkuAttributeKey = $this->skuAttributeKeyRepo->create($skuAttributeKey);
 
         $createdSkuAttributeKey = $createdSkuAttributeKey->toArray();
         $this->assertArrayHasKey('id', $createdSkuAttributeKey);
         $this->assertNotNull($createdSkuAttributeKey['id'], 'Created SkuAttributeKey must have id specified');
-        $this->assertNotNull(SkuAttributeKey::find($createdSkuAttributeKey['id']), 'SkuAttributeKey with given id must be in DB');
+        $this->assertNotNull(SkuKey::find($createdSkuAttributeKey['id']),
+            'SkuAttributeKey with given id must be in DB');
         $this->assertModelData($skuAttributeKey, $createdSkuAttributeKey);
     }
 
@@ -42,7 +43,7 @@ class SkuAttributeKeyRepositoryTest extends TestCase
      */
     public function test_read_sku_attribute_key()
     {
-        $skuAttributeKey = factory(SkuAttributeKey::class)->create();
+        $skuAttributeKey = factory(SkuKey::class)->create();
 
         $dbSkuAttributeKey = $this->skuAttributeKeyRepo->find($skuAttributeKey->id);
 
@@ -55,8 +56,8 @@ class SkuAttributeKeyRepositoryTest extends TestCase
      */
     public function test_update_sku_attribute_key()
     {
-        $skuAttributeKey = factory(SkuAttributeKey::class)->create();
-        $fakeSkuAttributeKey = factory(SkuAttributeKey::class)->make()->toArray();
+        $skuAttributeKey = factory(SkuKey::class)->create();
+        $fakeSkuAttributeKey = factory(SkuKey::class)->make()->toArray();
 
         $updatedSkuAttributeKey = $this->skuAttributeKeyRepo->update($fakeSkuAttributeKey, $skuAttributeKey->id);
 
@@ -70,11 +71,11 @@ class SkuAttributeKeyRepositoryTest extends TestCase
      */
     public function test_delete_sku_attribute_key()
     {
-        $skuAttributeKey = factory(SkuAttributeKey::class)->create();
+        $skuAttributeKey = factory(SkuKey::class)->create();
 
         $resp = $this->skuAttributeKeyRepo->delete($skuAttributeKey->id);
 
         $this->assertTrue($resp);
-        $this->assertNull(SkuAttributeKey::find($skuAttributeKey->id), 'SkuAttributeKey should not exist in DB');
+        $this->assertNull(SkuKey::find($skuAttributeKey->id), 'SkuAttributeKey should not exist in DB');
     }
 }

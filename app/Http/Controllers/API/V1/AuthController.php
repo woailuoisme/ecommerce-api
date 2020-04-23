@@ -15,7 +15,6 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Ramsey\Uuid\Uuid;
-use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\JWTAuth;
 use Tymon\JWTAuth\Manager;
 
@@ -96,7 +95,6 @@ class AuthController extends AppBaseController
 
     public function refresh(): JsonResponse
     {
-
         return $this->sendResponse(
             $this->_tokenData($this->manager->refresh($this->jwt->getToken())->get()),
             'User token successfully', 200);

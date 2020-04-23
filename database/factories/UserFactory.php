@@ -44,9 +44,18 @@ $factory->define(User::class, function (Faker $faker) {
 
 $factory->state(User::class, 'user-one', function (Faker $faker) {
     return [
-        'name' => 'ailuoga',
-        'email' => 'jhbwyl@126.com',
+        'name'     => 'ailuoga',
+        'email'    => 'jhbwyl@126.com',
         'password' => '123456',
+        'role'     => User::USER_ROLE_ADMIN,
+    ];
+});
+$factory->state(User::class, 'user-two', function (Faker $faker) {
+    return [
+        'name'     => 'woailuo',
+        'email'    => 'jhbwyl@163.com',
+        'password' => '123456',
+        'role'     => User::USER_ROLE_GENERAL,
     ];
 });
 

@@ -38,12 +38,12 @@ Route::namespace('V1')->prefix('v1')->group(function (){
 //            Route::post('update','UserProfileController@update')->name('user.profile.update');
 //            Route::get('','UserProfileController@show')->name('user.profile.show');
 //        });
-        route::get('favorite_products', 'UserFavoriteController@userFavoriteProducts')->name('user.favorite.list');
-        route::delete('favorite_clear', 'UserFavoriteController@clearFavorite')->name('user.favorite.clear');
+        route::get('favorite_products', 'UserFavoriteController@favoriteProducts')->name('user.favorite.list');
         route::post('favorite_product', 'UserFavoriteController@favorite')->name('user.favorite');
         route::post('favorite_cancel_product', 'UserFavoriteController@cancelFavorite')->name('user.cancel.favorite');
+        route::delete('favorite_clear', 'UserFavoriteController@clearFavorite')->name('user.favorite.clear');
 
-        route::get('like_reviews', 'UserlikeReviewController@cancelFavorite')->name('user.unlike');
+        route::get('like_reviews', 'UserlikeReviewController@likeRreviews')->name('user.unlike');
         route::post('like_review', 'UserlikeReviewController@upProduct')->name('user.like.review');
         route::post('unlike_review', 'UserlikeReviewController@downProduct')->name('user.unlike.review');
 

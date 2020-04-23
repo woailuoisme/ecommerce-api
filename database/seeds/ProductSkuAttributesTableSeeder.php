@@ -11,6 +11,6 @@ class ProductSkuAttributesTableSeeder extends Seeder
      */
     public function run()
     {
-        //
+
     }
 }

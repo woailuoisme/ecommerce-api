@@ -5,10 +5,8 @@ namespace App\Http\Controllers\API\V1;
 
 use App\Http\Controllers\AppBaseController;
 use App\Http\Resources\ProductResource;
-use App\Models\Product;
 use App\Repositories\ProductRepository;
 use Illuminate\Http\Request;
-use Psy\Util\Json;
 
 
 class ProductController extends AppBaseController
@@ -32,7 +30,6 @@ class ProductController extends AppBaseController
             'total'       => $products->total(),
             'items'       => ProductResource::collection($products->items()),
         ];
-
         return $this->sendResponseWithoutMsg($products_data);
     }
 

@@ -2,7 +2,6 @@
 
 namespace App;
 
-use App\Exceptions\ApiException;
 use App\Models\Cart;
 use App\Models\Order;
 use App\Models\Product;
@@ -59,6 +58,17 @@ class User extends Authenticatable implements JWTSubject
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function format()
+    {
+        return [
+            'id'         => $this->id,
+            'name'       => $this->name,
+            'email'      => $this->email,
+            'avatar'     => $this->avatar,
+            'avatar_url' => $this->avatarUrl,
+        ];
+    }
 
     public function setPasswordAttribute($value): void
     {
@@ -124,46 +134,12 @@ class User extends Authenticatable implements JWTSubject
         return $this->favoriteProductsCount() > 0;
     }
 
-    public function favoriteProduct($product_id, $cancel = false): void
-    {
-        $cancel ? $this->favoriteProducts()->detach($product_id) : $this->favoriteProducts()->attach($product_id);
-    }
 
     public function favoriteProductsCount():int
     {
         return $this->favoriteProducts->count();
     }
 
-    public function addFavoriteToCart($product_id): void
-    {
-        if ($this->existsFavoriteProduct($product_id)) {
-            /** @var Cart $cart */
-            $cart = $this->cart;
-            $cart->addProductToCart($product_id);
-            $this->favoriteProducts()->detach($product_id);
-        } else {
-            throw new ApiException("product is't been favorite");
-        }
-    }
-
-    public function checkoutFavoriteProduct(): void
-    {
-        /** @var Cart $cart */
-        $cart = $this->cart;
-        if (empty($cart)){
-            $cart = Cart::create([
-                'user_id' => $this->id,
-            ]);
-        }
-        if ($this->hasFavoriteProducts()) {
-            foreach ($this->favoriteProducts as $product) {
-                $cart->products()->attach($product->id, ['quantity' => 1]);
-            }
-            $this->favoriteProducts()->detach();
-        }else{
-            throw new ApiException('User is\'t favorite any product');
-        }
-    }
 
     public function likeReviews(): BelongsToMany
     {
@@ -181,20 +157,10 @@ class User extends Authenticatable implements JWTSubject
         return $this->likeReviews()->wherePivot('product_id', $product_id)->exists();
     }
 
-    public function likeReview($product_id, $like): void
-    {
-        if ($this->existsLikeReviews($product_id)) {
-            $this->likeReviews()->updateExistingPivot($product_id, ['like' => $like]);
-        }
-        $this->likeReviews()->attach($product_id, ['like' => $like]);
-
-    }
-
     public function hasLikeReviews(): bool
     {
         return $this->likeReviewsCount() > 0;
     }
-
 
     public function scopeWithMostBlogPosts(Builder $query)
     {

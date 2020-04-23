@@ -5,7 +5,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Psy\Util\Json;
 
 /**
  * Class Product
@@ -38,6 +37,20 @@ class Product extends Model
     public static $rules = [
 
     ];
+
+    public function format()
+    {
+        return [
+            'id'               => $this->id,
+            'description'      => $this->description,
+            'content'          => $this->content,
+            'imageURL'         => $this->image,
+            'price'            => $this->price,
+            'created_at'       => $this->created_at->toDateTimeString(),
+            'updated_at'       => $this->updated_at->toDateTimeString(),
+            'updated_at_human' => $this->updated_at->diffforhumans(),
+        ];
+    }
 
     public function category(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
@@ -82,6 +95,5 @@ class Product extends Model
             ->with('skus')
             ->with('reviews');
     }
-
 
 }

@@ -7,7 +7,7 @@ namespace App\Services;
 use Illuminate\Support\Facades\Response;
 use InfyOm\Generator\Utils\ResponseUtil;
 
-class AppbaseService
+class AppBaseService
 {
     public function sendResponse($data, $message, $code = 200): \Illuminate\Http\JsonResponse
     {

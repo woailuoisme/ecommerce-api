@@ -23,7 +23,6 @@ abstract class BaseRepository
     protected $app;
 
     /**
-     * @param $model
      * @param Application $app
      *
      * @throws \Exception
@@ -32,9 +31,11 @@ abstract class BaseRepository
     {
         $this->app = $app;
         $this->makeModel();
+//        dd($this->model);
+//        dd(func_get_arg(0));
     }
 
-    public function setModel(Model $model)
+    public function setModel(Model $model): BaseRepository
     {
         if (!$model instanceof Model) {
             $modelName = get_class($model);
@@ -53,8 +54,6 @@ abstract class BaseRepository
     abstract public function getFieldsSearchable();
 
     /**
-     * Configure the Model
-     *
      * @return string
      */
     abstract public function model();
@@ -117,7 +116,6 @@ abstract class BaseRepository
         if ($limit !== null) {
             $query->limit($limit);
         }
-
         return $query;
     }
 
@@ -149,7 +147,6 @@ abstract class BaseRepository
     {
         $model = $this->model->newInstance($input);
         $model->save();
-
         return $model->fresh();
     }
 
@@ -164,8 +161,14 @@ abstract class BaseRepository
     public function find($id, $columns = ['*'])
     {
         $query = $this->model->newQuery();
-
         return $query->find($id, $columns);
+    }
+
+    public function findOrFail($id, $columns = ['*'])
+    {
+        $query = $this->model->newQuery();
+
+        return $query->findOrFail($id, $columns);
     }
 
     /**
@@ -182,7 +185,6 @@ abstract class BaseRepository
         $model = $query->findOrFail($id);
         $model->fill($input);
         $model->save();
-
         return $model;
     }
 

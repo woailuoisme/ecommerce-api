@@ -4,13 +4,11 @@
 namespace App\Services;
 
 
-use App\Models\Cart;
 use App\Repositories\UserRepository;
 use App\User;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-class FavoriteProductService extends AppbaseService
+class FavoriteProductService extends AppBaseService
 {
     /**
      * @var UserRepository
@@ -21,23 +19,35 @@ class FavoriteProductService extends AppbaseService
     {
         $this->userRespository = $userRepository;
     }
-    public function addFavoriteProductToCart($product_id): void
+
+    public function favoriteProduct(User $user, $prodcut_id): void
     {
-         DB::transaction(function () use ($product_id) {
-            /** @var User $user */
-            $user = Auth::guard('api')->user();
-             $this->userRespository->setModel($user)->addFavoriteToCart($product_id);
-//            $user->addFavoriteToCart($product_id);
+        $this->userRespository->setModel($user)->favoriteProduct($prodcut_id);
+    }
+
+    public function cancelFavoriteProduct(User $user, $prodcut_id): void
+    {
+        $this->userRespository->setModel($user)->cancelFavoriteProduct($prodcut_id);
+    }
+
+    public function clearFavorite(User $user): void
+    {
+        DB::transaction(function () use ($user) {
+            $this->userRespository->setModel($user)->clearFavoriteProducts();
         });
     }
-    public function checkoutToCart(): void
+
+    public function addFavoriteProductToCart(User $user, $product_id): void
     {
-        DB::transaction(function ()  {
-            /** @var User $user */
-            $user = Auth::guard('api')->user();
-            /** @var Cart $cart */
+        DB::transaction(function () use ($user, $product_id) {
+             $this->userRespository->setModel($user)->addFavoriteToCart($product_id);
+        });
+    }
+
+    public function checkoutToCart(User $user): void
+    {
+        DB::transaction(function () use ($user) {
             $this->userRespository->setModel($user)->checkoutFavoriteProduct();
-//            $user->checkoutFavoriteProduct();
         });
     }
 }

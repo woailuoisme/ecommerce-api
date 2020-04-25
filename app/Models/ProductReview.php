@@ -63,4 +63,5 @@ class ProductReview extends Model
         return $this->likeUsers()->wherePivot('like', User::TYPE_UNLIKE)->count();
     }
 
+
 }

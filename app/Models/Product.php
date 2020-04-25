@@ -14,21 +14,6 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Product extends Model
 {
-    public $table = 'products';
-
-    public $fillable = [
-
-    ];
-
-    /**
-     * The attributes that should be casted to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'id' => 'integer',
-    ];
-
     /**
      * Validation rules
      *
@@ -36,6 +21,18 @@ class Product extends Model
      */
     public static $rules = [
 
+    ];
+    public $table = 'products';
+    public $fillable = [
+
+    ];
+    /**
+     * The attributes that should be casted to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'id' => 'integer',
     ];
 
     public function format()
@@ -57,9 +54,27 @@ class Product extends Model
         return $this->belongsTo(ProductCategory::class, 'category_id', 'id');
     }
 
+    public function hasReviews(): bool
+    {
+        return $this->reviews()->count() > 0;
+    }
+
     public function reviews(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(ProductReview::class, 'product_id', 'id')->latest();
+    }
+
+    public function avgRating()
+    {
+        $total_rating = $this->reviews()->sum('rating');
+        $total_count = $this->reviewsCount();
+
+        return $total_rating <= 0 || $total_count <= 0 ? 0 : round($total_rating / $total_count);
+    }
+
+    public function reviewsCount(): int
+    {
+        return $this->reviews()->count();
     }
 
     public function skus()

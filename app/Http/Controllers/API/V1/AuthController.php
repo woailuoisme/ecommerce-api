@@ -2,8 +2,6 @@
 
 
 namespace App\Http\Controllers\API\V1;
-
-
 use App\Http\Controllers\AppBaseController;
 use App\Http\Requests\Auth\ForgotPasswordRequest;
 use App\Http\Requests\Auth\LoginRequest;
@@ -121,7 +119,7 @@ class AuthController extends AppBaseController
         $email = $request->input('email');
         $password = $request->input('password');
         $user = User::where('password_token', $reset_token)
-            ->where('email', $email)->get()->first();
+            ->where('email', $email)->first();
         if (!$user) {
             throw new ModelNotFoundException('user not found');
         }
@@ -140,8 +138,10 @@ class AuthController extends AppBaseController
 
     private function _tokenData($token): array
     {
+        /** @var JWTAuth $jwt_auth */
+        $jwt_auth = auth('api');
         /** @var User $user */
-        $user = auth('api')->user();
+        $user = $jwt_auth->user();
         return [
             'name'       => $user->name,
             'email'      => $user->email,
@@ -149,9 +149,9 @@ class AuthController extends AppBaseController
             'token_info' => [
                 'token'      => $token,
                 'token_type' => 'bearer ',
-                'expires_in' => auth('api')->factory()->getTTL().' minutes',
-                'create_at'  => Carbon::createFromTimestamp(auth('api')->getClaim('iat'))->toDateTimeString(),
-                'expires_at' => Carbon::createFromTimestamp(auth('api')->getClaim('exp'))->toDateTimeString(),
+                'expires_in' => $jwt_auth->factory()->getTTL().' minutes',
+                'create_at'  => Carbon::createFromTimestamp($jwt_auth->getClaim('iat'))->toDateTimeString(),
+                'expires_at' => Carbon::createFromTimestamp($jwt_auth->getClaim('exp'))->toDateTimeString(),
             ],
 
         ];

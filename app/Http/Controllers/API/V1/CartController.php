@@ -5,8 +5,8 @@ namespace App\Http\Controllers\API\V1;
 //use App\Events\CartCheckoutEvent;
 use App\Http\Controllers\AppBaseController;
 use App\Http\Resources\CartResource;
-use App\Repositories\CartRepository;
 use App\Services\CartService;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -29,6 +29,7 @@ class CartController extends AppBaseController
 
     public function index(Request $request): \Illuminate\Http\JsonResponse
     {
+//        dd(Auth::guard('api'));
         $cart = Auth::guard('api')->user()->cart()->with('products')->get()->first();
         return $this->sendResponse($cart ? new CartResource($cart) : null, 'Carts retrieved successfully');
     }
@@ -38,7 +39,10 @@ class CartController extends AppBaseController
         $validatedData = $request->validate([
             'product_id' => 'required|integer',
         ]);
-        return $this->cartService->addProductToCart($validatedData['product_id']);
+        /** @var User $user */
+        $user = auth('api')->user();
+
+        return $this->cartService->addProductToCart($user, $validatedData['product_id']);
     }
 
     public function updateProductQuantity(Request $request): ?\Illuminate\Http\JsonResponse
@@ -47,7 +51,10 @@ class CartController extends AppBaseController
             'product_id' => 'required|integer',
             'quantity' => 'required|integer',
         ]);
-        return $this->cartService->updateProductQuantity(
+        /** @var User $user */
+        $user = auth('api')->user();
+
+        return $this->cartService->updateProductQuantity($user,
             $validatedData['product_id'],
             $validatedData['quantity']);
     }
@@ -62,7 +69,10 @@ class CartController extends AppBaseController
         $validatedData = $request->validate([
             'product_id' => 'required|integer',
         ]);
-        return $this->cartService->removeSingle($validatedData['product_id']);
+        /** @var User $user */
+        $user = auth('api')->user();
+
+        return $this->cartService->removeSingle($user, $validatedData['product_id']);
     }
 
     public function removeSome(Request $request): \Illuminate\Http\JsonResponse
@@ -70,13 +80,18 @@ class CartController extends AppBaseController
         $validatedData = $request->validate([
             'product_ids' => 'required|array',
         ]);
+        /** @var User $user */
+        $user = auth('api')->user();
 
-        return $this->cartService->removeMulti($validatedData['product_ids']);
+        return $this->cartService->removeMulti($user, $validatedData['product_ids']);
     }
 
     public function checkout(Request $request): \Illuminate\Http\JsonResponse
     {
-        return $this->cartService->checkout();
+        /** @var User $user */
+        $user = auth('api')->user();
+
+        return $this->cartService->checkout($user);
     }
 
 }

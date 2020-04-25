@@ -17,7 +17,6 @@ class ProductController extends AppBaseController
     public function __construct(ProductRepository $productRepository)
     {
         $this->productRepository = $productRepository;
-
     }
 
     public function index(): \Illuminate\Http\JsonResponse
@@ -25,10 +24,13 @@ class ProductController extends AppBaseController
 //        $products = Product::all();
         $products = $this->productRepository->paginate(10, 1);
         $products_data = [
-            'lastPage'    => $products->lastPage(),
-            'currentPage' => $products->currentPage(),
-            'total'       => $products->total(),
-            'items'       => ProductResource::collection($products->items()),
+            'meta'  => [
+                'perPage'     => $products->perPage(),
+                'lastPage'    => $products->lastPage(),
+                'currentPage' => $products->currentPage(),
+                'total'       => $products->total(),
+            ],
+            'items' => ProductResource::collection($products->items()),
         ];
         return $this->sendResponseWithoutMsg($products_data);
     }
@@ -39,7 +41,6 @@ class ProductController extends AppBaseController
         if (!$product) {
             return $this->sendError("Product $id not found ");
         }
-
         return $this->sendResponseWithoutMsg(new ProductResource($product));
     }
 

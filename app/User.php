@@ -109,7 +109,6 @@ class User extends Authenticatable implements JWTSubject
         return $this->attributes['role'] === self::USER_ROLE_ADMIN;
     }
 
-
     public function productReviews(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(ProductReview::class);

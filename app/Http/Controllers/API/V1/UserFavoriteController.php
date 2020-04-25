@@ -5,17 +5,27 @@ namespace App\Http\Controllers\API\V1;
 
 
 use App\Http\Controllers\AppBaseController;
-use App\Models\Product;
-use App\Services\AppbaseService;
+use App\Repositories\ProductRepository;
+use App\Services\FavoriteProductService;
 use App\User;
 use Illuminate\Http\Request;
 
 class UserFavoriteController extends AppBaseController
 {
+    /**
+     * @var ProductRepository
+     */
+    private $productRepository;
+    /**
+     * @var FavoriteProductService
+     */
+    private $favoriteProductService;
 
-    public function __construct()
+    public function __construct(FavoriteProductService $favoriteProductService, ProductRepository $productRepository)
     {
         $this->middleware('auth:api');
+        $this->productRepository = $productRepository;
+        $this->favoriteProductService = $favoriteProductService;
     }
 
     public function userFavoriteProducts(Request $request): \Illuminate\Http\JsonResponse
@@ -26,7 +36,6 @@ class UserFavoriteController extends AppBaseController
         if (!$products) {
             return $this->sendSuccess('User is not favaorite any product');
         }
-
         return $this->sendResponse($products, 'User favorites products retrieve successfully');
     }
 
@@ -36,16 +45,12 @@ class UserFavoriteController extends AppBaseController
             'product_id'=> ['required','integer']
         ]);
         $product_id = $validate_data['product_id'];
-        $product = Product::find($product_id);
-        if (empty($product)) {
-            return $this->sendError("product $product_id is not exists");
-        }
+        $product = $this->productRepository->findOrFail($product_id);
         /** @var User $user */
         $user = auth('api')->user();
-        if ($user->existsFavoriteProduct($product_id)) {
-            return $this->sendError('product has been favorite');
-        }
-        $user->favoriteProducts()->attach($product_id);
+
+        $this->favoriteProductService->favoriteProduct($user, $product_id);
+
         return $this->sendSuccess("user {$user->name} favorite {$product_id} ");
     }
 
@@ -53,7 +58,8 @@ class UserFavoriteController extends AppBaseController
     {
         /** @var User $user */
         $user = auth('api')->user();
-        $user->favoriteProducts()->detach();
+
+        $this->favoriteProductService->clearFavorite($user);
 
         return $this->sendSuccess('user all favorites has been cleared ');
     }
@@ -64,18 +70,32 @@ class UserFavoriteController extends AppBaseController
             'product_id'=> ['required','integer']
         ]);
         $product_id = $validate_data['product_id'];
-        $product = Product::find($product_id);
-        if (empty($product)) {
-            return $this->sendError("product $product_id is not exists");
-        }
+        $product = $this->productRepository->findOrFail($product_id);
         /** @var User $user */
         $user = auth('api')->user();
-        if ($user->existsFavoriteProduct($product_id)) {
-            $user->favoriteProducts()->detach($product_id);
+        $this->favoriteProductService->cancelFavoriteProduct($user, $product_id);
 
-            return $this->sendSuccess("user {$user->name} cancel favorite {$product_id} ");
-        } else {
-            return $this->sendError('product is\'t be favorite');
-        }
+        return $this->sendSuccess("user {$user->name} cancel favorite {$product_id} ");
     }
+
+    public function addFavoriteProductToCart(Request $request)
+    {
+        $validate_data = $request->validate([
+            'product_id' => ['required', 'integer'],
+        ]);
+        $product_id = $validate_data['product_id'];
+        /** @var User $user */
+        $user = auth('api')->user();
+        $this->favoriteProductService->addFavoriteProductToCart($user, $product_id);
+
+        return $this->sendSuccess('product has been add to cart');
+    }
+
+    public function checkoutToCart(Request $request)
+    {
+        /** @var User $user */
+        $user = auth('api')->user();
+        $this->favoriteProductService->checkoutToCart($user);
+    }
+
 }

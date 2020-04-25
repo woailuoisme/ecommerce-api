@@ -6,7 +6,6 @@ use App\Exceptions\ApiException;
 use App\Models\Cart;
 use App\Models\Order;
 use Illuminate\Container\Container as Application;
-use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class CartRepository

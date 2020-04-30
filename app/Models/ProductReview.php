@@ -14,12 +14,26 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ProductReview extends Model
 {
+    protected static function boot()
+    {
+        parent::boot();
+//        static::created(function (ProductReview $review){
+//            /** @var Product $product */
+//            $product = $review->product;
+//            $product->rating= $product->avgRating();
+//            $product->save();
+//        });
+//        static::deleted(function (ProductReview $review){
+//            /** @var Product $product */
+//            $product = $review->product;
+//            $product->rating= $product->avgRating();
+//            $product->save();
+//        });
+    }
 
     public $table = 'product_reviews';
     public $fillable = [
-
     ];
-
     /**
      * The attributes that should be casted to native types.
      *
@@ -52,6 +66,15 @@ class ProductReview extends Model
     {
         return $this->likeUsers->count() > 0;
     }
+    public function upLike(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->likeUsers()->wherePivot('like',User::TYPE_LIKE);
+    }
+
+    public function downLike(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->likeUsers()->wherePivot('like',User::TYPE_UNLIKE);
+    }
 
     public function upLikeUserCount(): int
     {
@@ -61,6 +84,12 @@ class ProductReview extends Model
     public function downLikeUserCount(): int
     {
         return $this->likeUsers()->wherePivot('like', User::TYPE_UNLIKE)->count();
+    }
+
+    public function score(){
+        $up = $this->upLike()->sum('like');
+        $down = $this->downLike()->sum('like');
+        return $up+$down;
     }
 
 

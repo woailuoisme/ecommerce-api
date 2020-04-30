@@ -39,6 +39,13 @@ class OrderController extends AppBaseController
         return $this->sendSuccess('Order Address update successfully');
     }
 
+    public function orderPay(Request $request){
+        $validate_data = $request->validate([
+            'order_id' => ['required'],
+        ]);
+        
+    }
+
 }
 
 

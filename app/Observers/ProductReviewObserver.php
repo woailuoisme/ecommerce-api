@@ -2,7 +2,7 @@
 
 namespace App\Observers;
 
-use App\ProductReview;
+use App\Models\ProductReview;
 
 class ProductReviewObserver
 {

@@ -75,6 +75,11 @@ Route::namespace('V1')->prefix('v1')->group(function (){
         Route::apiResource('orders', 'OrderAPIController');
     });
 });
+//支付宝支付处理
+Route::get('alipay/pay','AlipayController@pay');
+//支付后跳转页面
+Route::post('alipay/return','AlipayController@result');
+
 
 Route::fallback(function () {
     return response()->json([

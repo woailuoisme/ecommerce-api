@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\ProductReview;
+use App\Observers\ProductReviewObserver;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -24,5 +26,6 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         //
+        ProductReview::observe(ProductReviewObserver::class);
     }
 }

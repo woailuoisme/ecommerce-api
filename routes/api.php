@@ -3,7 +3,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::namespace('V1')->prefix('v1')->group(function (){
+Route::namespace('V1')->prefix('v1')->group(function () {
     Route::prefix('auth')->group(function () {
         Route::post('login', 'AuthController@login')->name('auth.login');
         Route::post('logout', 'AuthController@logout')->name('auth.logout');
@@ -24,12 +24,12 @@ Route::namespace('V1')->prefix('v1')->group(function (){
             Route::delete('remove_multi', 'CartController@removeMulti')->name('user.cart.remove.multi');
             Route::delete('clear', 'CartController@clearCart')->name('user.cart.clear');
         });
-        route::prefix('order')->group(function (){
+        route::prefix('order')->group(function () {
             Route::get('', 'OrderController@index')->name('cart.list');
             Route::get('/{id}', 'OrderController@show')->name('cart.detail');
-            Route::post('pay','OrderController@pay')->name('cart.pay');
-            Route::delete('/{id}','OrderController@cancleOrder')->name('cart.cancel');
-            Route::delete('','OrderController@cancleMultiOrder')->name('cart.cancel.multi');
+            Route::post('pay', 'OrderController@pay')->name('cart.pay');
+            Route::delete('/{id}', 'OrderController@cancleOrder')->name('cart.cancel');
+            Route::delete('', 'OrderController@cancleMultiOrder')->name('cart.cancel.multi');
         });
 //        route::prefix('profile')->group(function (){
 //            Route::get('','UserProfileController@index')->name('user.profile.index');
@@ -61,24 +61,32 @@ Route::namespace('V1')->prefix('v1')->group(function (){
     });
     Route::prefix('sku')->group(function () {
         Route::post('key', 'ProductSkuKeyController@store');
+        Route::delete('/{id}', 'ProductSkuKeyController@store');
     });
-    Route::namespace('Admin')->prefix('admin')->group(function(){
-//        Route::apiResource('product_categories', 'ProductCategoryAPIController');
-//        Route::apiResource('products', 'ProductAPIController');
-//        Route::apiResource('product_skus', 'ProductSkuAPIController');
-        Route::apiResource('product_reviews', 'ProductReviewAPIController');
+    Route::namespace('Admin')->middleware('auth:api')->prefix('admin')->group(function () {
 //        Route::apiResource('product_coupons', 'ProductCouponAPIController');
-//        Route::apiResource('sku_attribute_keys', 'SkuAttributeKeyAPIController');
-//        Route::apiResource('sku_attribute_values', 'SkuAttributeValueAPIController');
-        Route::apiResource('addresses', 'AddressAPIController');
-        Route::apiResource('carts', 'CartAPIController');
-        Route::apiResource('orders', 'OrderAPIController');
+//        Route::apiResource('addresses', 'AddressAPIController');
+//        Route::apiResource('carts', 'CartAPIController');
+        Route::prefix('dashboard')->group(function () {
+            Route::get('', 'DashboardController@index');
+        });
+        Route::apiResource('/orders', 'OrderAPIController');
+        Route::apiResource('/product_category', 'ProductCategoryAPIController');
+        Route::apiResource('/sku_all_attr', 'SkuAttributeKeyAPIController');
+//        Route::apiResource('/products', 'ProductAPIController');
+
+//        Route::post('/products/{product}/sku', 'ProductAPIController');
+
+//        Route::group(['prefix' => 'products'], function () {
+//            Route::apiResource('/{product}/reviews', 'ProductReviewAPIController');
+//            Route::apiResource('/{product}/sku', 'ProductSkuAPIController');
+//        });
     });
 });
 //支付宝支付处理
-Route::get('alipay/pay','AlipayController@pay');
+Route::get('alipay/pay', 'AlipayController@pay');
 //支付后跳转页面
-Route::post('alipay/return','AlipayController@result');
+Route::post('alipay/return', 'AlipayController@result');
 
 
 Route::fallback(function () {

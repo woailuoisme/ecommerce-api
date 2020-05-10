@@ -15,8 +15,8 @@ class ProductSkuValueResourece extends JsonResource
     public function toArray($request)
     {
         return [
-            'id'   => $this->id,
-            'name' => $this->name,
+            'value'    => $this->value,
+            'en_value' => $this->en_value,
         ];
     }
 }

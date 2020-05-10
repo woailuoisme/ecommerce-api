@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use Exception;
+use Http\Discovery\Exception\NotFoundException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Validation\ValidationException;
@@ -57,6 +58,9 @@ class Handler extends ExceptionHandler
         if ($request->wantsJson()) {
             return $this->renderExceptionAsJson($request, $exception);
         }
+
+//        dd($exception);
+
         return parent::render($request, $exception);
     }
 
@@ -64,11 +68,11 @@ class Handler extends ExceptionHandler
     {
         // Currently converts AuthorizationException to 403 HttpException
         // and ModelNotFoundException to 404 NotFoundHttpException
-        $exception = $this->prepareException($exception);
+//        $exception = $this->prepareException($exception);
         // Default response
         $response = [
             'success' => false,
-            'message' => 'Sorry, something went wrong.'
+            'message' => 'Sorry, something went wrong.',
         ];
         // Add debug info if app is in debug mode
         if (config('app.debug')) {
@@ -82,7 +86,11 @@ class Handler extends ExceptionHandler
         // Build correct status codes and status texts
         switch ($exception) {
             case $exception instanceof ValidationException:
-                return $this->convertValidationExceptionToResponse($exception, $request);
+                $status = 422;
+                $response['message'] = $exception->errors();
+//                $response['error'] = $exception->errors();
+                break;
+//                return $this->convertValidationExceptionToResponse($exception, $request);
             case $exception instanceof AuthenticationException:
                 $status = 401;
                 $response['message'] = Response::$statusTexts[$status];
@@ -91,14 +99,23 @@ class Handler extends ExceptionHandler
                 $status = 401;
                 $response['message'] = $exception->getMessage();
                 break;
+            case $exception instanceof NotFoundException:
+                $status = 404;
+                $response['message'] = Response::$statusTexts[$status];
+                break;
             case $this->isHttpException($exception):
                 $status = $exception->getStatusCode();
                 $response['message'] = Response::$statusTexts[$status];
                 break;
+//            case $exception instanceof ApiException:
+//                $status = $exception->getCode();
+//                $response['message'] = $exception->getMessage();
+//                break;
             default:
                 $response['message'] = $exception->getMessage();
                 break;
         }
+
         return response()->json($response, $status);
     }
 }

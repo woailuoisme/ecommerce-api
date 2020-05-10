@@ -18,35 +18,28 @@ class ProductCategoryController extends AppBaseController
         $this->repository = $repository;
     }
 
-    public function index()
+    public function index(): \Illuminate\Http\JsonResponse
     {
         return $this->sendResponse(ProductCategory::all(), 'ProductCategory retrieved Successfully');
     }
 
-    public function show($id)
+    public function show($id): \Illuminate\Http\JsonResponse
     {
         /** @var ProductCategory $productCategory */
         $productCategory = $this->repository->find($id);
-        if (empty($productCategory)) {
+        if ($productCategory === null) {
             return $this->sendError('Product Category not found');
         }
 
         return $this->sendResponse($productCategory->toArray(), 'Product Category retrieved successfully');
     }
 
-    public function categoryProducts($cateID)
+    public function categoryProduct($cateID)
     {
         /** @var ProductCategory $category */
         $category = $this->repository->find($cateID);
-        $products = $category->products;
 
-        return $this->sendResponse($products);
-    }
-
-    public function categoryProduct($cateID, $prodcutid)
-    {
-        /** @var ProductCategory $category */
-        $category = $this->repository->find($cateID);
-        $products = $category->products()->where();
+//        $products = $category->products()->where('producu_id',$prodcutid);
+        return $this->sendResponseWithoutMsg($category->products);
     }
 }

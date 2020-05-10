@@ -88,7 +88,7 @@ class UserRepository extends BaseRepository
         $this->model->favoriteProducts()->detach();
     }
 
-    public function likeReviews(): void
+    public function likeReviews()
     {
         return $this->model->likeReviews;
     }

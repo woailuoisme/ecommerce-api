@@ -13,7 +13,6 @@ class InitAllTables extends Migration
      */
     public function up()
     {
-        //
         Schema::create('product_categories', function (Blueprint $table) {
             $table->increments('id')->comment('ID');
             $table->string('name')->comment('名称');
@@ -33,9 +32,10 @@ class InitAllTables extends Migration
             $table->string('title')->comment('商品名称');
             $table->text('description')->comment('商品概要');
             $table->text('content')->comment('商品详情');
-            $table->string('attribute_list')
+            $table->json('attribute_list')
                 ->comment('用于前端显示，选择后生成product_sku 的sku_sting属性加上product_id查询具体的sku
-                 JSON例：{"color":["黑色","白色"],"尺寸"：[“3.5”,"2.8"]')->default('');
+                 JSON例：[{"key":"color","name":"颜色","values":["黑色","白色"]}
+                ,[“key”："size","name":"屏幕尺寸","values"：[“3.5”,"5.0","6.0"]}]')->default(null);
             $table->string('image')->comment('商品封面');
 
             $table->boolean('is_sale')->default(true)->comment('商品是否正在售卖');
@@ -55,9 +55,10 @@ class InitAllTables extends Migration
         Schema::create('product_sku', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedBigInteger('product_id');
-
-            $table->string('sku_string')
-                ->comment('json例： {"color":"黑色","尺寸"：“3.5”，重量："20kg"}');
+            $table->json('sku_json')
+                ->comment('json例： [{"key":"color","name":"颜色","value":"黑色"}
+                ,[“key”："size","name":"屏幕尺寸","value"：“3.5”}]');
+            $table->string('sku_str');
             $table->unsignedInteger('stock')->comment('库存');
             $table->decimal('price', 10, 2)->comment('SKU 价格');
 
@@ -66,7 +67,8 @@ class InitAllTables extends Migration
                 ->on('products')
                 ->onDelete('cascade');
             $table->timestamps();
-            $table->unique(['id','sku_string']);
+            $table->unique('sku_str');
+            $table->unique(['product_id', 'sku_str']);
         });
 
         Schema::create('product_reviews', function (Blueprint $table) {
@@ -82,7 +84,7 @@ class InitAllTables extends Migration
                 ->on('products')
                 ->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')
-                    ->onDelete('cascade');
+                ->onDelete('cascade');
             $table->timestamps();
         });
         Schema::create('product_coupons', function (Blueprint $table) {
@@ -103,23 +105,25 @@ class InitAllTables extends Migration
         // 用于构成 属性生成选项，方便管理人员发布商品时候正确的勾选商品属性
         Schema::create('product_sku_attributes_key', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('key')->comment('example: color size');
             $table->string('name')->comment('例：“颜色”，“尺寸”');
             $table->unsignedInteger('sort')->default(1)->comment('排序');
             $table->timestamps();
             $table->unique(['name']);
+            $table->unique(['key']);
         });
+
         Schema::create('product_sku_attributes_value', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('sku_attributes_id');
-            $table->string('name')->comment('黑色，12寸');
-            $table->foreign('sku_attributes_id')
+            $table->unsignedInteger('key_id');
+            $table->string('value')->default('')->comment('12寸');
+            $table->foreign('key_id')
                 ->references('id')
                 ->on('product_sku_attributes_key')
                 ->onDelete('cascade')
-                ->onUpdate('cascade')
-            ;
+                ->onUpdate('cascade');
+            $table->unique(['key_id', 'value']);
             $table->timestamps();
-            $table->unique(['sku_attributes_id', 'name']);
         });
     }
 

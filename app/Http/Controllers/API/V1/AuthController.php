@@ -146,6 +146,7 @@ class AuthController extends AppBaseController
             'name'       => $user->name,
             'email'      => $user->email,
             'avatar'     => $user->avatarUrl,
+            'avatar'     => $user->role,
             'token_info' => [
                 'token'      => $token,
                 'token_type' => 'bearer ',

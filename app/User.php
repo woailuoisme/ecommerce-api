@@ -24,11 +24,21 @@ class User extends Authenticatable implements JWTSubject
 //        static::created(static::createCartClause());
     }
 
-//    public static function createCartClause(){
-//        return function (){
-//            $this->cart()->create();
-//        };
-//    }
+    public const TYPE_LIKE = 1;
+    public const TYPE_UNLIKE = -1;
+
+    public const ROLE_ADMIN = 'admin';
+    public const ROLE_USER = 'user';
+    public const ROLE_MANGER = 'manager';
+
+    public const ROLE_CONTENT_EDITOR = 'content_editor';
+
+    public const USER_ROLE = [
+        self::ROLE_ADMIN          => '超级管理员',
+        self::ROLE_MANGER         => '管理员',
+        self::ROLE_USER           => '普通用户',
+        self::ROLE_CONTENT_EDITOR => '内容编辑',
+    ];
 
     /**
      * The attributes that are mass assignable.
@@ -59,7 +69,7 @@ class User extends Authenticatable implements JWTSubject
         'email_verified_at' => 'datetime',
     ];
 
-    public function format()
+    public function format(): array
     {
         return [
             'id'         => $this->id,
@@ -93,20 +103,11 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasOne(Cart::class);
     }
 
-    public const TYPE_LIKE = 1;
-    public const TYPE_UNLIKE = -1;
 
-    public const USER_ROLE_ADMIN = 'admin';  // 管理员
-    public const USER_ROLE_GENERAL = 'general';    // 普通用户
-
-    public const USER_ROLE = [
-        self::USER_ROLE_ADMIN   => '管理员',
-        self::USER_ROLE_GENERAL => '普通用户',
-    ];
 
     public function getIsAdminAttribute(): bool
     {
-        return $this->attributes['role'] === self::USER_ROLE_ADMIN;
+        return $this->attributes['role'] === self::ROLE_ADMIN;
     }
 
     public function productReviews(): \Illuminate\Database\Eloquent\Relations\HasMany

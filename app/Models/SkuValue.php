@@ -16,7 +16,9 @@ class SkuValue extends Model
     public $table = 'product_sku_attributes_value';
 
     public $fillable = [
-        'name',
+        'value',
+        'en_value',
+        'en_key_name',
     ];
 
     /**

@@ -15,9 +15,9 @@ class ProductSkuKeyResourece extends JsonResource
     public function toArray($request)
     {
         return [
-            'id'     => $this->id,
-            'name'   => $this->name,
-            'values' => $this->whenLoaded('skuValues', ProductSkuValueResourece::collection($this->skuValues)),
+            'name'    => $this->name,
+            'en_name' => $this->en_name,
+            'values'  => $this->whenLoaded('skuValues', ProductSkuValueResourece::collection($this->skuValues)),
         ];
     }
 }

@@ -25,28 +25,25 @@ class ProductSkuKeyController extends AppBaseController
     public function store(Request $request)
     {
         $validate_data = $request->validate([
-            'name'   => ['required'],
-            'sort'   => ['integer'],
-            'values' => ['required', 'array'],
+            'name'    => ['required', 'exists:product_sku_attributes_key'],
+            'en_name' => ['required', 'exists:product_sku_attributes_key'],
+            'values'  => ['required', 'array'],
         ]);
         $result = DB::transaction(function () use ($validate_data) {
             /** @var SkuKey $sku_key */
-            $sku_key = SkuKey::where('name', $validate_data['name'])->first();
-//            dd($sku_key->toJson());
+            $sku_key = SkuKey::where('name', $validate_data['name'])
+                ->Where('en_name', $validate_data['en_name'])->first();
             if (!$sku_key) {
                 $sku_key = SkuKey::create([
-                    'name' => $validate_data['key'],
-                    'sort' => $validate_data['sort'] || 0,
+                    'name'    => $validate_data['name'],
+                    'en_name' => $validate_data['en_name'],
                 ]);
             }
-            if (isset($validate_data['sort']) && $sku_key !== $validate_data['sort']) {
-                $sku_key->sort = $validate_data['sort'];
-                $sku_key->save();
-            }
-            $sku_values_changes = $sku_key->syncSkuValues($validate_data['values']);
+            $sku_values_changes = $sku_key->skuValues()->sync($validate_data['values']);
 
             return [
-                'sku_key'          => new ProductSkuKeyResourece($sku_key->fresh(['skuValues'])),
+//                'sku_key'          => new ProductSkuKeyResourece($sku_key->fresh('skuValues')),
+                'sku_key'          => $sku_key,
                 'sku_value_change' => $sku_values_changes,
             ];
         });
@@ -54,5 +51,12 @@ class ProductSkuKeyController extends AppBaseController
         return $this->sendResponseWithoutMsg($result);
     }
 
+    public function destory(SkuKey $skuKey)
+    {
+        $skuKey->delete();
+        $skuKey->skuValues()->delete();
+
+        return $this->sendSuccess('sku_attr delete successfully');
+    }
 
 }

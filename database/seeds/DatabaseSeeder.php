@@ -16,9 +16,11 @@ class DatabaseSeeder extends Seeder
             $this->command->info('Database was freshed');
         }
         $this->call([
+            ProductSkuAttributesTableSeeder::class,
             UsersTableSeeder::class,
             ProductCategoriesTableSeeder::class,
             ProductsTablesTableSeeder::class,
+
             ProductSkuTableSeeder::class,
             ProductReviewsTableSeeder::class,
             ProductCouponsTableSeeder::class,
@@ -27,7 +29,7 @@ class DatabaseSeeder extends Seeder
             CartProductTableSeeder::class,
             OrderProductTableSeeder::class,
             UserFavoriteProductTableSeeder::class,
-            UserLikeCommentsSeeder::class
+            UserLikeCommentsSeeder::class,
         ]);
 
     }

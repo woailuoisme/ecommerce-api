@@ -15,9 +15,11 @@ class ProductCategoriesTableSeeder extends Seeder
         $faker = Faker\Factory::create(config('app.faker_locale'));
         $names = collect(['Science', 'Sport', 'Politics', 'Entartainment', 'Economy']);
         $names->each(function ($name) use ($faker) {
-            $category=factory(ProductCategory::class)->make();
-            $category->name=$name;
+            $category = factory(ProductCategory::class)->make();
+            $category->name = $name;
             $category->save();
         });
+
+        $this->command->info("ProductCategoriesTableSeeder seeding completed successfully");
     }
 }

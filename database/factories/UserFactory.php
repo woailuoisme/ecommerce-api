@@ -31,14 +31,15 @@ $factory->define(User::class, function (Faker $faker) {
     $updatedTime =(clone $createdTime)->modify('+5 days');
     $emailVerifiedTime =(clone $createdTime)->modify('+5 minutes');
     return [
-        'name' => $faker->unique()->userName,
-        'email' => $faker->unique()->safeEmail,
+        'name'              => $faker->unique()->userName,
+        'email'             => $faker->unique()->safeEmail,
         'email_verified_at' => $emailVerifiedTime,
-        'avatar' =>$faker->imageUrl(100,100),
-        'password' => '123456', // password
-        'remember_token' => Str::random(10),
-        'created_at' => $createdTime,
-        'updated_at' => $updatedTime,
+        'role'              => User::ROLE_USER,
+        'avatar'            => $faker->imageUrl(100, 100),
+        'password'          => '123456', // password
+        'remember_token'    => Str::random(10),
+        'created_at'        => $createdTime,
+        'updated_at'        => $updatedTime,
     ];
 });
 
@@ -47,7 +48,7 @@ $factory->state(User::class, 'user-one', function (Faker $faker) {
         'name'     => 'ailuoga',
         'email'    => 'jhbwyl@126.com',
         'password' => '123456',
-        'role'     => User::USER_ROLE_ADMIN,
+        'role'     => User::ROLE_ADMIN,
     ];
 });
 $factory->state(User::class, 'user-two', function (Faker $faker) {
@@ -55,7 +56,7 @@ $factory->state(User::class, 'user-two', function (Faker $faker) {
         'name'     => 'woailuo',
         'email'    => 'jhbwyl@163.com',
         'password' => '123456',
-        'role'     => User::USER_ROLE_GENERAL,
+        'role'     => User::ROLE_USER,
     ];
 });
 

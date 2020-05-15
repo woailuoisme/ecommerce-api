@@ -4,6 +4,7 @@
 namespace App\Http\Controllers\API\V1\Admin;
 
 
+use App\Helpers\DateHelper;
 use App\Http\Controllers\AppBaseController;
 use App\Models\Order;
 use Carbon\Carbon;
@@ -14,7 +15,7 @@ class DashBoardController extends AppBaseController
     public function index()
     {
 //        $this->authorize(['isGeneral']);
-        $this->authorize('isGeneral');
+//        $this->authorize('isGeneral');
 //        $this->authorize('isManager');
         //购物车中商品统计 当前被加入购物车商品 Top 5
 //        $cart_product_info = DB::table('carts')
@@ -35,6 +36,7 @@ class DashBoardController extends AppBaseController
 //            ->groupBy('order_product.product_id')
 //            ->orderBy('total','desc')
 //            ->get();
+
         //被收藏最多商品统计 被购买最多的商品Top 5
 
         //被评论做多的商品
@@ -50,6 +52,7 @@ class DashBoardController extends AppBaseController
         $order_paid = Order::where('order_status', Order::ORDER_STATUS_PAY_SUCCESS)->count();
         $order_completed = Order::where('order_status', Order::ORDER_STATUS_PAY_CLOSE)->count();
 
+
 //        $order_unpay_recently_week =Order::where('order_status',Order::ORDER_STATUS_PAY_PENDING)
 //            ->where('updated_at','>=',Carbon::now()->startOfWeek()->toDateTimeString())->count();
 //
@@ -60,11 +63,30 @@ class DashBoardController extends AppBaseController
 //            ->groupBy('month')
 //            ->get();
 
-        //本年每月
-        $order_unpay_group_month = Order::selectRaw("MONTH(created_at) as month,count(*) as total")
+//        //本年每月
+//        $order_unpay_group_month = Order::selectRaw("MONTH(created_at) as month,count(*) as total")
+//            ->where('updated_at', '>=', Carbon::now()->startOfYear()->toDateTimeString())
+//            ->groupBy('month')
+//            ->get();
+
+        //年月
+        $order_unpay_group_month = Order::selectRaw("YEAR(created_at) as year,MONTH(created_at) as month,count(*) as total")
             ->where('updated_at', '>=', Carbon::now()->startOfYear()->toDateTimeString())
-            ->groupBy('month')
+            ->groupBy(['year', 'month'])
+            ->having('year', '=', '2020')
             ->get();
+
+        $year = 2020;
+        $order_group_month = Order::selectRaw("DATE_FORMAT(created_at,'%Y-%m') as date,count(*) as total")
+            ->groupBy('date')
+            ->having('date', 'like', "$year-%")
+            ->get();
+
+        $order_group_month_two = Order::selectRaw("DATE_FORMAT(created_at,'%Y-%m') as date,GROUP_CONCAT(id) as ids")
+            ->whereBetween('updated_at', DateHelper::date_between_year($year))
+            ->groupBy('date')
+            ->get();
+
         //本月每周
         $order_unpay_group_week = Order::selectRaw("WEEK(created_at) as week,count(*) as total")
             ->where('updated_at', '>=', Carbon::now()->startOfMonth()->toDateTimeString())
@@ -79,6 +101,8 @@ class DashBoardController extends AppBaseController
             ->get();
 
         return $this->sendResponse([
+            '$order_group_month_two'  => $order_group_month_two,
+            '$order_group_month'      => $order_group_month,
             'order_unpay_group_month' => $order_unpay_group_month,
             'order_unpay_group_week'  => $order_unpay_group_week,
             'order_unpay_group_day'   => $order_unpay_group_day,

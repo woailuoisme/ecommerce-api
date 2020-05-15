@@ -7,6 +7,8 @@ namespace App\Http\Controllers\API\V1;
 use App\Http\Controllers\AppBaseController;
 use App\Models\ProductCategory;
 use App\Repositories\ProductCategoryRepository;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ProductCategoryController extends AppBaseController
 {
@@ -40,6 +42,35 @@ class ProductCategoryController extends AppBaseController
         $category = $this->repository->find($cateID);
 
 //        $products = $category->products()->where('producu_id',$prodcutid);
-        return $this->sendResponseWithoutMsg($category->products);
+        return $this->sendData($category->products);
+    }
+
+
+    public function uploadCover(Request $request)
+    {
+        $validatedData = $request->validate([
+            'category_id' => ['required'],
+            'cover_image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
+        $category = ProductCategory::findOrFail($validatedData['category_id']);
+
+        if ($request->hasFile('cover_image')) {
+            $uploadedFile = $request->file('cover_image');
+            $file_path = $uploadedFile->store('categories', ['disk' => 'public']);
+            $fileInfo = [
+                'original_path' => $file_path,
+                'mime_type'     => $uploadedFile->getMimeType(),
+                'size'          => $uploadedFile->getSize(),
+            ];
+            if ($category->coverImage && $path = $category->coverImage->original_path) {
+                if (Storage::disk('public')->exists($path)) {
+                    Storage::disk('public')->delete($path);
+                }
+                $category->coverImage()->update($fileInfo);
+            } else {
+                $category->coverImage()->create($fileInfo);
+            }
+        }
     }
 }

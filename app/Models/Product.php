@@ -35,11 +35,25 @@ class Product extends Model
         'id' => 'integer',
     ];
 
-    public function format()
+
+    public const SALE_TRUE = 1;
+    public const SALE_FALSE = 0;
+
+    public const QUERY_ALL = 0;
+    public const QUERY_NEWEST = 1;
+    public const QUERY_HOT = 2;
+    public const QUERY_RECOMMEND = 3;
+
+    public const MEDIA_TYPE_COVER = 'cover';
+    public const MEDIA_TYPE_ALBUM = 'album';
+
+    public function format(): array
     {
         return [
             'id'               => $this->id,
+            'title'            => $this->title,
             'description'      => $this->description,
+            'rating'           => $this->rating,
             'content'          => $this->content,
             'imageURL'         => $this->image,
             'price'            => $this->price,
@@ -64,14 +78,6 @@ class Product extends Model
         return $this->hasMany(ProductReview::class, 'product_id', 'id')->latest();
     }
 
-    public function avgRating()
-    {
-        $total_rating = $this->reviews()->sum('rating');
-        $total_count = $this->reviewsCount();
-
-        return $total_rating <= 0 || $total_count <= 0 ? 0 : round($total_rating / $total_count);
-    }
-
     public function reviewsCount(): int
     {
         return $this->reviews()->count();
@@ -82,7 +88,17 @@ class Product extends Model
         return $this->hasMany(ProductSku::class, 'product_id', 'id');
     }
 
-    public function setSkuAttribute(Array $skuArr)
+    public function albums(): \Illuminate\Database\Eloquent\Relations\MorphMany
+    {
+        return $this->morphMany(Media::class, 'mediable')->where('custom_type', self::MEDIA_TYPE_ALBUM);
+    }
+
+    public function coverImage(): \Illuminate\Database\Eloquent\Relations\MorphOne
+    {
+        return $this->morphOne(Media::class, 'mediable')->where('custom_type', self::MEDIA_TYPE_COVER);
+    }
+
+    public function setSkuAttribute(array $skuArr)
     {
         $this->attributes['attribute_list'] = json_encode($skuArr);
     }
@@ -101,6 +117,26 @@ class Product extends Model
     {
         // comments_count
         return $query->withCount('reviews')->orderBy('reviews_count', 'desc');
+    }
+
+    /**
+     * SELECT * WHERE hub_id = 100 AND (name LIKE `%searchkey%` OR surname LIKE `%searchkey%`):
+     * $model->byFieldListLike(['name', 'surname'], 'searchkey');
+     */
+    public function scopeByFieldListLike($query, $fields, $value)
+    {
+        $query->where(function ($query) use ($fields, $value) {
+            foreach ($fields as $field) {
+                $query->orWhere($field, 'like', "%".$value."%");
+            }
+        });
+
+        return $query;
+    }
+
+    public function getRatingAttribute()
+    {
+        return round(2 * $this->reviews()->avg('rating')) / 2;
     }
 
     public function scopeLatestWithRelations(Builder $query)

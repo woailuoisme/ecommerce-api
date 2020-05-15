@@ -2,19 +2,18 @@
 
 namespace App\Http\Controllers\API\V1\Admin ;
 
+use App\Http\Controllers\AppBaseController;
 use App\Http\Requests\Admin\CreateProductAPIRequest;
 use App\Http\Requests\Admin\UpdateProductAPIRequest;
 use App\Models\Product;
 use App\Repositories\ProductRepository;
 use Illuminate\Http\Request;
-use App\Http\Controllers\AppBaseController;
 use Response;
 
 /**
  * Class ProductController
- * @package App\Http\Controllers\API\V1\Admin 
+ * @package App\Http\Controllers\API\V1\Admin
  */
-
 class ProductAPIController extends AppBaseController
 {
     /** @var  ProductRepository */
@@ -29,8 +28,8 @@ class ProductAPIController extends AppBaseController
      * Display a listing of the Product.
      * GET|HEAD /products
      *
-     * @param Request $request
-     * @return Response
+     * @param  Request  $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index(Request $request)
     {
@@ -47,9 +46,9 @@ class ProductAPIController extends AppBaseController
      * Store a newly created Product in storage.
      * POST /products
      *
-     * @param CreateProductAPIRequest $request
+     * @param  CreateProductAPIRequest  $request
      *
-     * @return Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(CreateProductAPIRequest $request)
     {

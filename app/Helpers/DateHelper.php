@@ -31,7 +31,7 @@ class DateHelper
     public const DATE_LAST_YEAR_TO_TODAY = 1017;
 
 
-    public static function dates(int $type): ?array
+    public static function dates_between(int $type): ?array
     {
         $date = null;
         switch ($type) {
@@ -142,6 +142,38 @@ class DateHelper
         }
 
         return $date;
+    }
+
+    public static function date_between_year(int $year)
+    {
+        return [
+            Carbon::createFromDate($year)->startOfYear()->toDateTimeString(),
+            Carbon::createFromDate($year)->endOfYear()->toDateTimeString(),
+        ];
+    }
+
+    public static function date_between_mouth(int $year, int $mouth)
+    {
+        return [
+            Carbon::createFromDate($year, $mouth)->startOfMonth()->toDateTimeString(),
+            Carbon::createFromDate($year, $mouth)->endOfMonth()->toDateTimeString(),
+        ];
+    }
+
+    public static function date_between_quarter(int $year, int $mouth)
+    {
+        return [
+            Carbon::createFromDate($year, $mouth)->startOfQuarter()->toDateTimeString(),
+            Carbon::createFromDate($year, $mouth)->endOfQuarter()->toDateTimeString(),
+        ];
+    }
+
+    public static function date_between_day(int $year, int $mouth, $day)
+    {
+        return [
+            Carbon::createFromDate($year, $mouth, $day)->startOfDay()->toDateTimeString(),
+            Carbon::createFromDate($year, $mouth, $day)->endOfDay()->toDateTimeString(),
+        ];
     }
 
 }

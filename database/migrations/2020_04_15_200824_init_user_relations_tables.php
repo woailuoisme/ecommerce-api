@@ -66,10 +66,11 @@ class InitUserRelationsTables extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('cart_id');
             $table->unsignedBigInteger('product_id');
-            $table->string('product_sku')->nullable();
+            $table->string('sku')->nullable();
             $table->unsignedInteger('quantity');
             $table->timestamps();
-            $table->unique(['cart_id','product_id','product_sku']);
+            $table->unique(['cart_id', 'product_id', 'sku']);
+
             $table->foreign('cart_id')
                 ->references('id')
                 ->on('carts')
@@ -85,11 +86,11 @@ class InitUserRelationsTables extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('order_id');
             $table->unsignedBigInteger('product_id');
-            $table->string('product_sku')->nullable();
+            $table->string('sku')->nullable();
             $table->unsignedInteger('quantity');
             $table->timestamps();
 
-            $table->unique(['order_id','product_id','product_sku']);
+            $table->unique(['order_id', 'product_id', 'sku']);
             $table->foreign('order_id')
                 ->references('id')
                 ->on('orders')

@@ -19,7 +19,7 @@ class ProductSkuKeyController extends AppBaseController
             return $this->sendSuccess('No Data at server');
         }
 
-        return $this->sendResponseWithoutMsg(ProductSkuKeyResourece::collection($sku_keys));
+        return $this->sendData(ProductSkuKeyResourece::collection($sku_keys));
     }
 
     public function store(Request $request)
@@ -48,7 +48,7 @@ class ProductSkuKeyController extends AppBaseController
             ];
         });
 
-        return $this->sendResponseWithoutMsg($result);
+        return $this->sendData($result);
     }
 
     public function destory(SkuKey $skuKey)

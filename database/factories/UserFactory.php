@@ -35,7 +35,6 @@ $factory->define(User::class, function (Faker $faker) {
         'email'             => $faker->unique()->safeEmail,
         'email_verified_at' => $emailVerifiedTime,
         'role'              => User::ROLE_USER,
-        'avatar'            => $faker->imageUrl(100, 100),
         'password'          => '123456', // password
         'remember_token'    => Str::random(10),
         'created_at'        => $createdTime,

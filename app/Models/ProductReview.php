@@ -31,6 +31,7 @@ class ProductReview extends Model
 //        });
     }
 
+
     public $table = 'product_reviews';
     public $fillable = [
     ];
@@ -51,6 +52,24 @@ class ProductReview extends Model
     public static $rules = [
 
     ];
+
+    public function format()
+    {
+        return [
+            'user'       => [
+                'name'   => $this->user->name,
+                'avatar' => $this->user->avatarUrl,
+            ],
+            'rating'     => $this->rating,
+            'content'    => $this->content,
+            'created_at' => $this->created_at,
+        ];
+    }
+
+    public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
 
     public function product(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {

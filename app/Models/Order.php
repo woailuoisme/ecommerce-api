@@ -44,6 +44,7 @@ class Order extends Model
         self::ORDER_STATUS_SHIP_RECEIVED => '已收货',
     ];
 
+
     public $table = 'orders';
 
 //    public $fillable = [
@@ -72,7 +73,9 @@ class Order extends Model
 
     public function products(): BelongsToMany
     {
-        return $this->belongsToMany(Product::class, 'order_product')->withPivot('quantity')->withTimestamps();
+        return $this->belongsToMany(Product::class, 'order_product')
+            ->using(OrderProduct::class)
+            ->withPivot(['quantity', 'sku'])->withTimestamps();
     }
 
     public function user()
@@ -95,9 +98,19 @@ class Order extends Model
             $total = $product->price * $product->pivot->quantity;
             $Totals += $total;
         }
-        return $Totals;
+
+        return floor($Totals * 100) / 100;
     }
 
+    public function orderStatusText(string $type)
+    {
+        return static::$refundStatusMap[$type];
+    }
+
+    public function statusText()
+    {
+        return static::$refundStatusMap[$this->order_status];
+    }
 
 
 }

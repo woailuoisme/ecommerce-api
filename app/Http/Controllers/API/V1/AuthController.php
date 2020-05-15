@@ -135,7 +135,6 @@ class AuthController extends AppBaseController
         return $this->sendResponse($this->_tokenData($token), 'Reset successfully password');
     }
 
-
     private function _tokenData($token): array
     {
         /** @var JWTAuth $jwt_auth */
@@ -146,7 +145,7 @@ class AuthController extends AppBaseController
             'name'       => $user->name,
             'email'      => $user->email,
             'avatar'     => $user->avatarUrl,
-            'avatar'     => $user->role,
+            'role'       => $user->role,
             'token_info' => [
                 'token'      => $token,
                 'token_type' => 'bearer ',

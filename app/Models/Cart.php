@@ -22,16 +22,9 @@ class Cart extends Model
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-//        $this->cartRepository =$cartRepository;
     }
-//    public function __construct(CartRepository $cartRepository)
-//    {
-//        $this->cartRepository =$cartRepository;
-//    }
 
     public $table = 'carts';
-
-
 
 
     public $fillable = [
@@ -63,7 +56,9 @@ class Cart extends Model
 
     public function products(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
-        return $this->belongsToMany(Product::class, 'cart_product')->withPivot('quantity')->withTimestamps();
+        return $this->belongsToMany(Product::class, 'cart_product')
+//            ->using(CartProduct::class)
+            ->withPivot(['quantity', 'sku'])->withTimestamps();
     }
 
     public function existsProduct($product_id): bool

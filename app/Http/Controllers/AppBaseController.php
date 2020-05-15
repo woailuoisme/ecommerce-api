@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Response;
 
 /**
@@ -22,27 +23,6 @@ class AppBaseController extends Controller
         return Response::json($this->_makeResponse($message, $data), $code);
     }
 
-    public function sendResponseWithoutMsg($data, $code = 200): \Illuminate\Http\JsonResponse
-    {
-        return Response::json([
-            'success' => true,
-            'data'    => $data,
-        ], $code);
-    }
-
-    public function sendError($error, $code = 400): \Illuminate\Http\JsonResponse
-    {
-        return Response::json($this->_makeError($error), $code);
-    }
-
-    public function sendSuccess($message, $code=200): \Illuminate\Http\JsonResponse
-    {
-        return Response::json([
-            'success' => true,
-            'message' => $message
-        ], $code);
-    }
-
     private function _makeResponse($message, $data): array
     {
         if (empty($message)) {
@@ -59,6 +39,35 @@ class AppBaseController extends Controller
         ];
     }
 
+    public function sendData($data, $code = 200): \Illuminate\Http\JsonResponse
+    {
+        return Response::json([
+            'success' => true,
+            'data'    => $data,
+        ], $code);
+    }
+
+    public function paginatorData(LengthAwarePaginator $paginator, string $resource): array
+    {
+        return [
+            'meta'  => [
+                'per_page'     => $paginator->perPage(),
+                'last_page'    => $paginator->lastPage(),
+                'current_page' => $paginator->currentPage(),
+                'total'        => $paginator->total(),
+                'from'         => $paginator->firstItem(),
+                'to'           => $paginator->lastItem(),
+            ],
+//            'items' => $resource::collection($paginator->items()),
+            'items' => call_user_func("$resource::collection", $paginator->items()),
+        ];
+    }
+
+    public function sendError($error, $code = 400): \Illuminate\Http\JsonResponse
+    {
+        return Response::json($this->_makeError($error), $code);
+    }
+
     private function _makeError($message, array $data = []): array
     {
         $res = [
@@ -70,5 +79,13 @@ class AppBaseController extends Controller
         }
 
         return $res;
+    }
+
+    public function sendSuccess($message, $code = 200): \Illuminate\Http\JsonResponse
+    {
+        return Response::json([
+            'success' => true,
+            'message' => $message,
+        ], $code);
     }
 }

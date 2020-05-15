@@ -3,7 +3,6 @@
 namespace App\Repositories;
 
 use App\Models\Product;
-use App\Repositories\BaseRepository;
 
 /**
  * Class ProductRepository
@@ -36,5 +35,50 @@ class ProductRepository extends BaseRepository
     public function model()
     {
         return Product::class;
+    }
+
+
+    public function productList(
+        $perPage = 10,
+        $type = Product::QUERY_ALL
+    ): \Illuminate\Contracts\Pagination\LengthAwarePaginator {
+        $items = $this->model->newQuery()
+            ->with(['reviews', 'skus', 'category'])
+            ->where('is_sale', Product::SALE_TRUE)
+            ->orderBy($this->model::UPDATED_AT, 'desc')
+            ->get();
+        $onTopItem = collect([]);
+        foreach ($items as $key => $value) {
+            if ($value->is_top === 1) {
+                $other[] = $items->pull($key);
+            }
+        }
+        $items = $onTopItem->combine($items);
+        $paginator = new \Illuminate\Pagination\LengthAwarePaginator($items, $items->count(), 10);
+
+
+        switch ($type) {
+            case Product::QUERY_HOT:
+            case Product::QUERY_NEWEST:
+            case Product::QUERY_RECOMMEND:
+            case Product::QUERY_ALL:
+                return $this->model->newQuery()
+//                    ->with(['reviews','skus','category'])
+                    ->where('is_sale', Product::SALE_TRUE)
+                    ->orderBy($this->model::UPDATED_AT, 'desc')
+                    ->paginate($perPage);
+                break;
+        }
+    }
+
+    public function productDetail($id)
+    {
+        return $this->model->newQuery()
+            ->where('id', $id)
+            ->where('is_sale', Product::SALE_TRUE)
+            ->with(['reviews', 'category', 'skus'])
+            ->withCount('reviews')
+            ->orderBy($this->model::UPDATED_AT, 'desc')
+            ->first();
     }
 }

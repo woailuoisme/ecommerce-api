@@ -17,5 +17,6 @@ class UsersTableSeeder extends Seeder
         factory(User::class)->states('user-two')->create();
         factory(User::class, $usersCount)->create();
 
+
     }
 }

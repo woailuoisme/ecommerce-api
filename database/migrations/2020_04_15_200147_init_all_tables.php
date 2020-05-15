@@ -13,6 +13,20 @@ class InitAllTables extends Migration
      */
     public function up()
     {
+        Schema::create('profile', function ($table) {
+            $table->bigIncrements('id');
+            $table->unsignedBigInteger('user_id');
+            $table->enum('gender', ['male', 'female'])->default('male');
+            $table->timestamp('birthday')->nullable();
+            $table->string('mobile_phone');
+            $table->string('qq');
+            $table->string('wechat');
+            $table->json('Hobby');
+            $table->string('descriptions')->nullable();
+            $table->timestamps();
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+        });
+
         Schema::create('product_categories', function (Blueprint $table) {
             $table->increments('id')->comment('ID');
             $table->string('name')->comment('名称');
@@ -38,11 +52,13 @@ class InitAllTables extends Migration
                 ,[“key”："size","name":"屏幕尺寸","values"：[“3.5”,"5.0","6.0"]}]')->default(null);
             $table->string('image')->comment('商品封面');
 
-            $table->boolean('is_sale')->default(true)->comment('商品是否正在售卖');
+            $table->boolean('is_sale')->default(true)->comment('否正在售卖');
             $table->float('rating')->default(5)->comment('商品平均评分');
             $table->unsignedInteger('sold_count')->default(0)->comment('销量');
             $table->unsignedInteger('review_count')->default(0)->comment('评论量');
+            $table->unsignedInteger('view_count')->default(0)->comment('查看量');
             $table->decimal('price', 10, 2)->comment('SKU 最低价格');
+            $table->unsignedBigInteger('stock')->default(0)->comment('库存');
 
             $table->timestamps();
 

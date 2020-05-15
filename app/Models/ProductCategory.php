@@ -36,9 +36,22 @@ class ProductCategory extends Model
 
     ];
 
+    public function format(): array
+    {
+        return [
+            'name'  => $this->name,
+            'image' => $this->image,
+        ];
+    }
+
     public function products(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Product::class, 'category_id', 'id');
+    }
+
+    public function coverImage(): \Illuminate\Database\Eloquent\Relations\MorphOne
+    {
+        return $this->morphOne(Media::class, 'mediable');
     }
 
 

@@ -61,7 +61,10 @@ class CartController extends AppBaseController
 
     public function clearCart(): \Illuminate\Http\JsonResponse
     {
-        return $this->cartService->clearCart();
+        /** @var User $user */
+        $user = auth('api')->user();
+
+        return $this->cartService->clearCart($user);
     }
 
     public function removeSingle(Request $request): \Illuminate\Http\JsonResponse

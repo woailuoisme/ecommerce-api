@@ -3,9 +3,11 @@
 namespace App;
 
 use App\Models\Cart;
+use App\Models\Media;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductReview;
+use App\Models\Profile;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -57,7 +59,14 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token', 'email', 'email_verified_at', 'created_at', 'updated_at',
+        'password',
+        'remember_token',
+        'email_verified_at',
+        'created_at',
+        'updated_at',
+    ];
+    protected $appends = [
+
     ];
 
     /**
@@ -90,20 +99,30 @@ class User extends Authenticatable implements JWTSubject
 //        $this->attributes['reset_token'] = Uuid::uuid4()->toString();
     }
 
-    public function checkPassword($value)
+    public function avatar(): \Illuminate\Database\Eloquent\Relations\MorphOne
+    {
+        return $this->morphOne(Media::class, 'mediable');
+    }
+
+    public function checkPassword($value): bool
     {
         return Hash::check($value, $this->attributes['password']);
     }
 
-    public function getAvatarUrlAttribute(){
-        return Storage::url($this->avatar);
+    public function getAvatarUrlAttribute()
+    {
+        return $this->avatar ? Storage::url($this->avatar->filename) : null;
     }
 
-    public function cart(){
+    public function cart(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
         return $this->hasOne(Cart::class);
     }
 
-
+    public function profile(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Profile::class);
+    }
 
     public function getIsAdminAttribute(): bool
     {

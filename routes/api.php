@@ -14,7 +14,7 @@ Route::namespace('V1')->prefix('v1')->group(function () {
         Route::post('password/reset', 'AuthController@resetPassword')->name('auth.password.rest');
     });
     Route::prefix('user')->group(function () {
-        Route::post('avatar', 'UserController@avatar')->name('user.avatar');
+
         route::prefix('cart')->group(function () {
             Route::get('', 'CartController@index')->name('user.cart.index');
             Route::post('add', 'CartController@addProductToCart')->name('user.cart.add');
@@ -27,17 +27,16 @@ Route::namespace('V1')->prefix('v1')->group(function () {
         route::prefix('order')->group(function () {
             Route::get('', 'OrderController@index')->name('cart.list');
             Route::get('/{id}', 'OrderController@show')->name('cart.detail');
-            Route::post('pay', 'OrderController@pay')->name('cart.pay');
+            Route::put('/pay/{id}', 'OrderController@pay')->name('cart.pay');
             Route::delete('/{id}', 'OrderController@cancleOrder')->name('cart.cancel');
             Route::delete('', 'OrderController@cancleMultiOrder')->name('cart.cancel.multi');
         });
-//        route::prefix('profile')->group(function (){
-//            Route::get('','UserProfileController@index')->name('user.profile.index');
-//            Route::post('','UserProfileController@store')->name('user.profile.create');
-//            //必须使用post 方式上传，put patch 都会获取不到文件
-//            Route::post('update','UserProfileController@update')->name('user.profile.update');
-//            Route::get('','UserProfileController@show')->name('user.profile.show');
-//        });
+        route::prefix('profile')->group(function () {
+            Route::get('', 'UserProfileController@index')->name('user.profile.index');
+            Route::put('', 'UserProfileController@store')->name('user.profile.create');
+            //必须使用post 方式上传，put patch 都会获取不到文件
+            Route::post('/avatar', 'UserProfileController@avatar')->name('user.profile.update');
+        });
         route::get('favorite_products', 'UserFavoriteController@favoriteProducts')->name('user.favorite.list');
         route::post('favorite_product', 'UserFavoriteController@favorite')->name('user.favorite');
         route::post('favorite_cancel_product', 'UserFavoriteController@cancelFavorite')->name('user.cancel.favorite');
@@ -57,13 +56,14 @@ Route::namespace('V1')->prefix('v1')->group(function () {
     Route::prefix('products')->group(function () {
         Route::get('', 'ProductController@index');
         Route::get('/{id}', 'ProductController@show');
+        Route::post('/{product}/reviews', 'ProductReview@store');
 //        route::get('/show','ProductController@show');
     });
     Route::prefix('sku')->group(function () {
         Route::post('key', 'ProductSkuKeyController@store');
         Route::delete('/{id}', 'ProductSkuKeyController@store');
     });
-    Route::namespace('Admin')->middleware('auth:api')->prefix('admin')->group(function () {
+    Route::namespace('Admin')->prefix('admin')->group(function () {
 //        Route::apiResource('product_coupons', 'ProductCouponAPIController');
 //        Route::apiResource('addresses', 'AddressAPIController');
 //        Route::apiResource('carts', 'CartAPIController');
@@ -73,7 +73,7 @@ Route::namespace('V1')->prefix('v1')->group(function () {
         Route::apiResource('/orders', 'OrderAPIController');
         Route::apiResource('/product_category', 'ProductCategoryAPIController');
         Route::apiResource('/sku_all_attr', 'SkuAttributeKeyAPIController');
-//        Route::apiResource('/products', 'ProductAPIController');
+        Route::apiResource('/products', 'ProductAPIController');
 
 //        Route::post('/products/{product}/sku', 'ProductAPIController');
 

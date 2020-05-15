@@ -18,8 +18,11 @@ class DatabaseSeeder extends Seeder
         $this->call([
             ProductSkuAttributesTableSeeder::class,
             UsersTableSeeder::class,
+            ProfileTableSeeder::class,
             ProductCategoriesTableSeeder::class,
             ProductsTablesTableSeeder::class,
+
+            MediasTableSeeder::class,
 
             ProductSkuTableSeeder::class,
             ProductReviewsTableSeeder::class,

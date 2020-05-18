@@ -12,7 +12,7 @@
       "ext-json": "*",
       "caouecs/laravel-lang": "~5.0",
       "fideloper/proxy": "^4.0",
-      "fruitcake/laravel-cors": "^1.0",
+      "fruitcake/laravel-cors": "^2.0",
       "infyomlabs/laravel-generator": "6.0.x-dev",
       "intervention/image": "^2.5",
       "laravel/framework": "^6.2",

@@ -2,19 +2,18 @@
 
 namespace App\Http\Controllers\API\V1\Admin ;
 
+use App\Http\Controllers\AppBaseController;
 use App\Http\Requests\Admin\CreateSkuAttributeKeyAPIRequest;
 use App\Http\Requests\Admin\UpdateSkuAttributeKeyAPIRequest;
 use App\Models\SkuKey;
 use App\Repositories\SkuAttributeKeyRepository;
 use Illuminate\Http\Request;
-use App\Http\Controllers\AppBaseController;
 use Response;
 
 /**
  * Class SkuAttributeKeyController
  * @package App\Http\Controllers\API\V1\Admin
  */
-
 class SkuAttributeKeyAPIController extends AppBaseController
 {
     /** @var  SkuAttributeKeyRepository */
@@ -115,7 +114,7 @@ class SkuAttributeKeyAPIController extends AppBaseController
      *
      * @return Response
      */
-    public function destroy($id)
+    public function destroy($id): Response
     {
         /** @var SkuKey $skuAttributeKey */
         $skuAttributeKey = $this->skuAttributeKeyRepository->find($id);

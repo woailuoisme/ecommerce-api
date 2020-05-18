@@ -51,6 +51,7 @@ Route::namespace('V1')->prefix('v1')->group(function () {
     Route::prefix('category')->group(function () {
         Route::get('', 'ProductCategoryController@index');
         Route::get('/{id}', 'ProductCategoryController@show');
+        Route::post('/cover', 'ProductCategoryController@uploadCover');
 //        route::get('/show','ProductController@show');
     });
     Route::prefix('products')->group(function () {

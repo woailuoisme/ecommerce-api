@@ -46,6 +46,8 @@ class Product extends Model
 
     public const MEDIA_TYPE_COVER = 'cover';
     public const MEDIA_TYPE_ALBUM = 'album';
+    public const MEDIA_TYPE_CONTENT = 'content_image';
+
 
     public function format(): array
     {

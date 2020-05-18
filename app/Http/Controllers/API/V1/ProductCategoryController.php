@@ -72,5 +72,6 @@ class ProductCategoryController extends AppBaseController
                 $category->coverImage()->create($fileInfo);
             }
         }
+        return $this->sendData(Storage::disk('public')->url($fileInfo['original_path']));
     }
 }

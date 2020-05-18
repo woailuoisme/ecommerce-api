@@ -44,7 +44,6 @@ class UserProfileController extends AppBaseController
                 'mime_type'      => $uploadedFile->getMimeType(),
                 'size'           => $uploadedFile->getSize(),
             ];
-
             if ($user->avatar && $path = $user->avatar->original_path) {
                 if (Storage::disk('public')->exists($path)) {
                     Storage::disk('public')->delete($path);
@@ -58,9 +57,28 @@ class UserProfileController extends AppBaseController
         return $this->sendResponse(new UserResource($user->fresh('avatar')), 'user avatar upload successfully');
     }
 
-    public function store()
+    public function store(Request $request)
     {
+        $validateData = $request->validate([
 
+        ]);
+        /** @var User $user */
+        $user = Auth::guard('api')->user();
+        $profile = $user->profile()->create($validateData);
+
+        return $this->sendData($profile);
+    }
+
+    public function udpate(Request $request)
+    {
+        $validateData = $request->validate([
+
+        ]);
+        /** @var User $user */
+        $user = Auth::guard('api')->user();
+        $profile = $user->profile()->update($validateData);
+
+        return $this->sendData($profile);
     }
 
 }

@@ -11,7 +11,10 @@ use Illuminate\Container\Container as Application;
 
 class UserRepository extends BaseRepository
 {
-
+    /**
+     * @var User
+     */
+    protected $model;
     /**
      * @var CartRepository
      */
@@ -23,11 +26,6 @@ class UserRepository extends BaseRepository
         $this->app = $app;
         $this->cartRepository = $cartRepository;
     }
-
-    /**
-     * @var User
-     */
-    protected $model;
 
     /**
      * Get searchable fields array
@@ -115,9 +113,8 @@ class UserRepository extends BaseRepository
     }
 
 
-    public function favoriteProduct(
-        $product_id
-    ): void {
+    public function favoriteProduct($product_id): void
+    {
         $exsits = $this->model->existsFavoriteProduct($product_id);
         if ($exsits) {
             throw  new ApiException('product has been favorite', 400);
@@ -135,5 +132,4 @@ class UserRepository extends BaseRepository
         }
         $this->model->favoriteProducts()->detach($product_id);
     }
-
 }

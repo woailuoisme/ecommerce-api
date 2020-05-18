@@ -25,8 +25,8 @@ class ProductReviewController extends AppBaseController
         /** @var User $user */
         $user = auth('auth:api')->user();
         $validateData['user_id'] = $user->id;
-        $review = $product->reviews()->create($validateData);
 
+        $review = $product->reviews()->create($validateData);
         return $this->sendData($review, 201);
     }
 

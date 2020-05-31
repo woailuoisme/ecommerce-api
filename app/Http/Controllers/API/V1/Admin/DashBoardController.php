@@ -8,6 +8,7 @@ use App\Helpers\DateHelper;
 use App\Http\Controllers\AppBaseController;
 use App\Models\Order;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class DashBoardController extends AppBaseController
 {
@@ -70,14 +71,21 @@ class DashBoardController extends AppBaseController
 //            ->get();
 
         //年月
-        $order_unpay_group_month = Order::selectRaw("YEAR(created_at) as year,MONTH(created_at) as month,count(*) as total")
+//        $order_unpay_group_month = Order::selectRaw(
+//            "YEAR(created_at) as year,MONTH(created_at) as month,IFNULL(count(id) ,0) as total")
+//            ->where('updated_at', '>=', Carbon::now()->startOfYear()->toDateTimeString())
+//            ->groupBy(['year', 'month'])
+//            ->having('year', '=', '2020')
+//            ->get();
+        $order_unpay_group_month = Order::selectRaw(
+              "MONTH(updated_at) AS month_num,DATE_FORMAT(updated_at, '%b') AS month_name,ifnull(count(*),0) AS total_num")
             ->where('updated_at', '>=', Carbon::now()->startOfYear()->toDateTimeString())
-            ->groupBy(['year', 'month'])
-            ->having('year', '=', '2020')
+            ->groupBy(['month_num','month_name'])
+//            ->having('year', '=', '2020')
             ->get();
 
         $year = 2020;
-        $order_group_month = Order::selectRaw("DATE_FORMAT(created_at,'%Y-%m') as date,count(*) as total")
+        $order_group_month = Order::selectRaw("DATE_FORMAT(created_at,'%Y-%m') as date,IFNULL(count(id) ,0) as total")
             ->groupBy('date')
             ->having('date', 'like', "$year-%")
             ->get();

@@ -6,8 +6,11 @@ namespace App\Http\Controllers\API\V1;
 
 use App\Http\Controllers\AppBaseController;
 use App\Models\Product;
+use App\Models\ProductReview;
+use App\Notifications\ReivewCreatedNotify;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class ProductReviewController extends AppBaseController
 {
@@ -15,19 +18,44 @@ class ProductReviewController extends AppBaseController
     {
         $this->middleware('auth:api');
     }
+    private function index(Product $product, Request $request){
+        return $this->sendResponse($product->reviews);
+    }
 
-    public function store(Product $product, Request $request)
+    public function show(ProductReview $review, Request $request){
+        return $this->sendResponse($review);
+    }
+
+    public function store( Request $request)
     {
         $validateData = $request->validate([
+            'product_id'=>['required'],
             'content' => ['required'],
-            'rating'  => ['rating', 'integer', 'min:0', 'max:5'],
+            'rating'  => ['required', 'integer', Rule::in([0,0.5,1,1.5,2,2.5,3,3.5,4,4.5,5])],
         ]);
         /** @var User $user */
-        $user = auth('auth:api')->user();
+        $user = auth('api')->user();
         $validateData['user_id'] = $user->id;
 
-        $review = $product->reviews()->create($validateData);
+        $review = ProductReview::create($validateData);
+        $user->notify(new ReivewCreatedNotify($review));
+//        Notification::send($users, new InvoicePaid($invoice));
         return $this->sendData($review, 201);
+    }
+
+
+    public function update(ProductReview $review, Request $request){
+        $validateData = $request->validate([
+            'content' => ['required'],
+            'rating'  => ['required', 'integer', Rule::in([0,0.5,1,1.5,2,2.5,3,3.5,4,4.5,5])],
+        ]);
+        $re=$review->update($validateData);
+        return $this->sendResponse($re);
+    }
+
+    public function destory(ProductReview $review){
+        $review->delete();
+        return $this->sendSuccess('deleted successfully');
     }
 
 }

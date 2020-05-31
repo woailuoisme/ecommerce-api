@@ -59,7 +59,8 @@ class AppBaseController extends Controller
                 'to'           => $paginator->lastItem(),
             ],
 //            'items' => $resource::collection($paginator->items()),
-            'items' => call_user_func("$resource::collection", $paginator->items()),
+            'items' => $paginator->items(),
+//            'items' => call_user_func("$resource::collection", $paginator->items()),
         ];
     }
 

@@ -2,29 +2,30 @@
 
 namespace App\Notifications;
 
-use App\Models\ProductReview;
+use App\Models\Order;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class ReivewCreatedNotify extends Notification
+class InvoicePaid extends Notification
 {
     use Queueable;
 
     /**
-     * @var ProductReview
+     * @var Order
      */
-    private $review;
+    private $order;
 
     /**
      * Create a new notification instance.
      *
-     * @param  ProductReview  $review
+     * @return void
      */
-    public function __construct(ProductReview $review)
+    public function __construct(Order $order)
     {
         //
-        $this->review = $review;
+        $this->order = $order;
     }
 
     /**
@@ -35,7 +36,7 @@ class ReivewCreatedNotify extends Notification
      */
     public function via($notifiable)
     {
-        return ['database'];
+        return ['mail'];
     }
 
     /**
@@ -46,22 +47,7 @@ class ReivewCreatedNotify extends Notification
      */
     public function toMail($notifiable)
     {
-//        return (new MailMessage)
-//            ->line('The introduction to the notification.')
-//            ->action('Notification Action', url('/'))
-//            ->line('Thank you for using our application!');
-
-        $url = url('/invoice/'.$this->review->id);
-
-        return (new MailMessage)
-            ->greeting('Hello!')
-            ->line('One of your invoices has been paid!')
-            ->action('View Invoice', $url)
-            ->line('Thank you for using our application!');
-
-//        return (new MailMessage)->view(
-//            'emails.name', ['invoice' => $this->invoice]
-//        );
+        return (new MailMessage)->markdown('mail.invoice.paid');
     }
 
     /**
@@ -74,6 +60,9 @@ class ReivewCreatedNotify extends Notification
     {
         return [
             //
+            'id' => $this->order->id,
+            'amount' => $this->order->order_num,
+            'order_status' => $this->order->order_status,
         ];
     }
 }

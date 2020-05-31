@@ -57,8 +57,16 @@ Route::namespace('V1')->prefix('v1')->group(function () {
     Route::prefix('products')->group(function () {
         Route::get('', 'ProductController@index');
         Route::get('/{id}', 'ProductController@show');
-        Route::post('/{product}/reviews', 'ProductReview@store');
+        Route::post('/{product}/reviews', 'ProductRevieControllerw@store');
+        Route::post('/upload', 'ProductController@upload');
 //        route::get('/show','ProductController@show');
+
+        Route::get('/{product}/reviews', 'ProductReviewController@index');
+        Route::get('/reviews/{review}', 'ProductReviewController@show');
+        Route::post('/reviews', 'ProductReviewController@store');
+        Route::put('/reviews/{review}', 'ProductReviewController@update');
+        Route::delete('/reviews/{review}', 'ProductReviewController@destroy');
+
     });
     Route::prefix('sku')->group(function () {
         Route::post('key', 'ProductSkuKeyController@store');

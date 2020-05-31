@@ -9,6 +9,7 @@ use App\Models\Product;
 use App\Repositories\ProductRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 
 class ProductController extends AppBaseController
@@ -25,9 +26,10 @@ class ProductController extends AppBaseController
     {
 //        $products = Product::all();
 //        $products = $this->productRepository->paginate(10, 1);
-        $page = $request->input('page', 10);
-        $type = $request->input('type', 0);
-        $products = $this->productRepository->productList($page);
+        $perPage = $request->input('perPage', 10);
+        $page = $request->input('page', 1);
+        $type = $request->input('type', Product::QUERY_ALL);
+        $products = $this->productRepository->products($page,$perPage);
 
         return $this->sendData($this->paginatorData($products, ProductResource::class));
     }
@@ -56,36 +58,73 @@ class ProductController extends AppBaseController
 //        json_decode($validate_data['sku_list'], true);
     }
 
-    public function uploadCover(Request $request)
+    public function upload(Request $request)
     {
         $validatedData = $request->validate([
-            'product_id'  => ['required'],
-            'cover_image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'product_id' => ['required'],
+            'image'      => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'type'       => [
+                'required',
+                Rule::in([
+                    Product::MEDIA_TYPE_COVER,
+                    Product::MEDIA_TYPE_ALBUM,
+                    Product::MEDIA_TYPE_CONTENT,
+                ]),
+            ],
         ]);
 
-        $product = Product::findOrFail($validatedData['category_id']);
+        $product = Product::findOrFail($validatedData['product_id']);
 
-        if ($request->hasFile('cover_image')) {
-            $uploadedFile = $request->file('cover_image');
-            $file_path = $uploadedFile->store('products/cover_images', ['disk' => 'public']);
+        if ($request->hasFile('image')) {
+            $uploadedFile = $request->file('image');
+
+            $file_path = $uploadedFile->store("products/{$validatedData['type']}", ['disk' => 'public']);
             $fileInfo = [
                 'original_path' => $file_path,
                 'mime_type'     => $uploadedFile->getMimeType(),
                 'size'          => $uploadedFile->getSize(),
-                'custom_type'   => Product::MEDIA_TYPE_COVER,
+                'custom_type'   => $validatedData['type'],
             ];
-            if ($product->coverImage && $path = $product->coverImage->original_path) {
-                if (Storage::disk('public')->exists($path)) {
-                    Storage::disk('public')->delete($path);
-                }
-                $product->coverImage()->update($fileInfo);
-            } else {
-                $product->coverImage()->create($fileInfo);
+            $imageUrl=null;
+            switch ($validatedData['type']) {
+                case Product::MEDIA_TYPE_CONTENT:
+                    if ($product->contentImage && $path = $product->contentImage->original_path) {
+                        if (Storage::disk('public')->exists($path)) {
+                            Storage::disk('public')->delete($path);
+                        }
+                        $product->contentImage()->update($fileInfo);
+                    } else {
+                        $product->contentImage()->create($fileInfo);
+                    }
+                    break;
+                case Product::MEDIA_TYPE_ALBUM:
+                    if ($product->albums && $image = $product->albums()
+                            ->where('original_path', $file_path)
+                            ->first()) {
+                        if (Storage::disk('public')->exists($image->original_path)) {
+                            Storage::disk('public')->delete($image->original_path);
+                        }
+                        $product->albums()->where('original_path', $file_path)->update($fileInfo);
+                    } else {
+                        $product->albums()->create($fileInfo);
+                    }
+                    break;
+                case Product::MEDIA_TYPE_COVER:
+                    if ($product->coverImage && $path = $product->coverImage->original_path) {
+                        if (Storage::disk('public')->exists($path)) {
+                            Storage::disk('public')->delete($path);
+                        }
+                        $product->coverImage()->update($fileInfo);
+                    } else {
+                        $product->coverImage()->create($fileInfo);
+                    }
+                    break;
             }
         }
+        return $this->sendData(Storage::disk('public')->url($fileInfo['original_path']));
     }
 
-    public function updaloadAlbum(Request $request)
+    public function uploadMultiAlbum(Request $request)
     {
         $validatedData = $request->validate([
             'product_id' => 'required|integer',

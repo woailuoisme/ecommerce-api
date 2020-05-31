@@ -2,29 +2,23 @@
 
 namespace App\Notifications;
 
-use App\Models\ProductReview;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class ReivewCreatedNotify extends Notification
+class OrderPaid extends Notification implements ShouldQueue
 {
     use Queueable;
 
     /**
-     * @var ProductReview
-     */
-    private $review;
-
-    /**
      * Create a new notification instance.
      *
-     * @param  ProductReview  $review
+     * @return void
      */
-    public function __construct(ProductReview $review)
+    public function __construct()
     {
         //
-        $this->review = $review;
     }
 
     /**
@@ -35,7 +29,8 @@ class ReivewCreatedNotify extends Notification
      */
     public function via($notifiable)
     {
-        return ['database'];
+//        return ['mail'];
+        return $notifiable->prefers_sms ? ['nexmo'] : ['mail', 'database'];
     }
 
     /**
@@ -47,21 +42,17 @@ class ReivewCreatedNotify extends Notification
     public function toMail($notifiable)
     {
 //        return (new MailMessage)
-//            ->line('The introduction to the notification.')
-//            ->action('Notification Action', url('/'))
-//            ->line('Thank you for using our application!');
+//                    ->line('The introduction to the notification.')
+//                    ->action('Notification Action', url('/'))
+//                    ->line('Thank you for using our application!');
 
-        $url = url('/invoice/'.$this->review->id);
+        $url = url('/invoice/'.$this->invoice->id);
 
         return (new MailMessage)
             ->greeting('Hello!')
             ->line('One of your invoices has been paid!')
             ->action('View Invoice', $url)
             ->line('Thank you for using our application!');
-
-//        return (new MailMessage)->view(
-//            'emails.name', ['invoice' => $this->invoice]
-//        );
     }
 
     /**

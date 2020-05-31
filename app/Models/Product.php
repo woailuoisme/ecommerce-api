@@ -46,7 +46,7 @@ class Product extends Model
 
     public const MEDIA_TYPE_COVER = 'cover';
     public const MEDIA_TYPE_ALBUM = 'album';
-    public const MEDIA_TYPE_CONTENT = 'content_image';
+    public const MEDIA_TYPE_CONTENT = 'content';
 
 
     public function format(): array
@@ -98,6 +98,10 @@ class Product extends Model
     public function coverImage(): \Illuminate\Database\Eloquent\Relations\MorphOne
     {
         return $this->morphOne(Media::class, 'mediable')->where('custom_type', self::MEDIA_TYPE_COVER);
+    }
+    public function contentImage(): \Illuminate\Database\Eloquent\Relations\MorphOne
+    {
+        return $this->morphOne(Media::class, 'mediable')->where('custom_type', self::MEDIA_TYPE_CONTENT);
     }
 
     public function setSkuAttribute(array $skuArr)

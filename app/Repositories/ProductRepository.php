@@ -38,10 +38,7 @@ class ProductRepository extends BaseRepository
     }
 
 
-    public function productList(
-        $perPage = 10,
-        $type = Product::QUERY_ALL
-    ): \Illuminate\Contracts\Pagination\LengthAwarePaginator {
+    public function productList($perPage = 10, $type = Product::QUERY_ALL): \Illuminate\Contracts\Pagination\LengthAwarePaginator {
         $items = $this->model->newQuery()
             ->with(['reviews', 'skus', 'category'])
             ->where('is_sale', Product::SALE_TRUE)
@@ -50,12 +47,11 @@ class ProductRepository extends BaseRepository
         $onTopItem = collect([]);
         foreach ($items as $key => $value) {
             if ($value->is_top === 1) {
-                $other[] = $items->pull($key);
+                $onTopItem[] = $items->pull($key);
             }
         }
         $items = $onTopItem->combine($items);
         $paginator = new \Illuminate\Pagination\LengthAwarePaginator($items, $items->count(), 10);
-
 
         switch ($type) {
             case Product::QUERY_HOT:
@@ -70,6 +66,27 @@ class ProductRepository extends BaseRepository
                 break;
         }
     }
+
+    public function products($page=null,$perPage = 10, $type = Product::QUERY_ALL): \Illuminate\Contracts\Pagination\LengthAwarePaginator
+    {
+        switch ($type) {
+            case Product::QUERY_HOT:
+            case Product::QUERY_NEWEST:
+            case Product::QUERY_RECOMMEND:
+            case Product::QUERY_ALL:
+                return $this->model->newQuery()
+//                    ->with(['reviews','skus','category'])
+                    ->where('is_sale', Product::SALE_TRUE)
+                    ->orderBy($this->model::UPDATED_AT, 'desc')
+                    ->paginate($perPage,['*'],'page',$page);
+                break;
+        }
+      return $this->model->newQuery()
+            ->where('is_sale', Product::SALE_TRUE)
+            ->orderBy($this->model::UPDATED_AT, 'desc')
+          ->paginate($perPage);
+    }
+
 
     public function productDetail($id)
     {

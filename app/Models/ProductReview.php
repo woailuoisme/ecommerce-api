@@ -33,8 +33,9 @@ class ProductReview extends Model
 
 
     public $table = 'product_reviews';
-    public $fillable = [
-    ];
+//    public $fillable = [
+//    ];
+    public $guarded=[];
     /**
      * The attributes that should be casted to native types.
      *

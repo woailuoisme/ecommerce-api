@@ -33,7 +33,7 @@ class MediasTableSeeder extends Seeder
         });
         $categories = \App\Models\ProductCategory::all();
         $categories->each(function (\App\Models\ProductCategory $cate) use ($faker) {
-            $cate->image()->create(
+            $cate->coverImage()->create(
                 [
                     'mediable_id'    => $cate->id,
                     'mediable_type'  => \App\Models\ProductCategory::class,
